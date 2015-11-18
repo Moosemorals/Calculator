@@ -103,6 +103,10 @@ public class UI implements ActionListener {
                             return false;
                         }
                     }
+
+                    if (key == 'x' || key == 'X' || key == 'q' || key == 'Q') {
+                        System.exit(0);
+                    }
                 }
 
                 return false;
