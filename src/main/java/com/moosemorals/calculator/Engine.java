@@ -23,6 +23,7 @@
  */
 package com.moosemorals.calculator;
 
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.ListModel;
@@ -50,7 +51,7 @@ public class Engine implements ListModel<String> {
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<ListDataListener> dataListeners;
-
+    private final DecimalFormat df;
     private int fraction = 1;
     private State state = State.Decimal;
 
@@ -58,6 +59,7 @@ public class Engine implements ListModel<String> {
         stack = new Stack();
         stack.push(0);
         dataListeners = new HashSet<>();
+        df = new DecimalFormat("#,##0.0#######");
     }
 
     public double peek() {
@@ -66,6 +68,11 @@ public class Engine implements ListModel<String> {
 
     public double peek(int d) {
         return stack.peek(d);
+    }
+
+    public void push(double value) {
+        stack.push(value);
+        notifyListeners();
     }
 
     public void command(String cmd) {
@@ -176,7 +183,7 @@ public class Engine implements ListModel<String> {
 
     @Override
     public String getElementAt(int index) {
-        return String.format("%f", stack.peek((stack.getDepth() - 1) - index));
+        return df.format(stack.peek(index));
     }
 
     @Override

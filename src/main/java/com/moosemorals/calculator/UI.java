@@ -64,9 +64,11 @@ public class UI implements ActionListener {
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
     private final Engine engine;
+    private final Clippy clippy;
 
     public UI(Engine engine) {
         this.engine = engine;
+        clippy = new Clippy();
     }
 
     public void build() {
@@ -95,6 +97,7 @@ public class UI implements ActionListener {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 if (e.getID() == KeyEvent.KEY_TYPED) {
+
                     char key = e.getKeyChar();
 
                     for (int i = 0; i < KEYS.length; i += 1) {
@@ -107,8 +110,23 @@ public class UI implements ActionListener {
                     if (key == 'x' || key == 'X' || key == 'q' || key == 'Q') {
                         System.exit(0);
                     }
-                }
+                } else if (e.getID() == KeyEvent.KEY_PRESSED) {
 
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
+                        String text = engine.getElementAt(0);
+                        clippy.sendToClipboard(text);
+                    } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
+                        String text = clippy.getFromClipboard();
+                        if (text != null) {
+                            try {
+                                double value = Double.parseDouble(text);
+                                engine.push(value);
+                            } catch (NumberFormatException ex) {
+                                // ignored, but no point trying to add the number
+                            }
+                        }
+                    }
+                }
                 return false;
             }
         });
@@ -126,6 +144,7 @@ public class UI implements ActionListener {
     }
 
     @Override
+
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         if (cmd == null) {
