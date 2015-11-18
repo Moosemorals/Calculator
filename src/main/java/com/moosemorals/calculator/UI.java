@@ -23,7 +23,7 @@
  */
 package com.moosemorals.calculator;
 
-import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -52,7 +52,7 @@ public class UI implements ActionListener {
                 Engine.ROOT, "7", "8", "9", "+",
                 Engine.SWAP, "4", "5", "6", "-",
                 Engine.DROP, "1", "2", "3", "*",
-                Engine.CLEAR, Engine.ENTER, "0", ".", "/"
+                Engine.CLEAR, ".", "0", Engine.ENTER, "/"
             };
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
@@ -66,15 +66,19 @@ public class UI implements ActionListener {
         JPanel numbers = new JPanel();
         numbers.setLayout(new GridLayout(0, 5));
 
+        Font font = new Font("SansSerif", Font.PLAIN, 14);
+
         for (int i = 0; i < BUTTONS.length; i += 1) {
             JButton button = new JButton();
             button.setText(BUTTONS[i]);
             button.setActionCommand(String.format("%s%s", CMD_PREFIX, BUTTONS[i]));
             button.addActionListener(this);
+            button.setFont(font);
             numbers.add(button);
         }
 
         EngineDisplay display = new EngineDisplay(engine);
+        display.setFont(font);
         engine.addListDataListener(display);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -104,9 +108,9 @@ public class UI implements ActionListener {
 
         //    main.setSize(480, 900);
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        main.getContentPane().setLayout(new BoxLayout(main.getContentPane(), BoxLayout.X_AXIS));
-        main.add(display, BorderLayout.CENTER);
-        main.add(numbers, BorderLayout.SOUTH);
+        main.getContentPane().setLayout(new BoxLayout(main.getContentPane(), BoxLayout.Y_AXIS));
+        main.add(display);
+        main.add(numbers);
         main.pack();
         main.setVisible(true);
     }

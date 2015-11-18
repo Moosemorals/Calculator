@@ -24,6 +24,7 @@
 package com.moosemorals.calculator;
 
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 import javax.swing.event.ListDataEvent;
@@ -46,11 +47,14 @@ public class EngineDisplay extends JComponent implements ListDataListener {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(480, 18 * engine.getDepth());
+        return new Dimension(240, 18 * 6);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+
+        FontMetrics fm = g.getFontMetrics();
+
         if (isOpaque()) { //paint background
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
@@ -58,7 +62,7 @@ public class EngineDisplay extends JComponent implements ListDataListener {
 
         for (int i = 0; i < engine.getDepth(); i += 1) {
             String text = String.format("%f", engine.peek(i));
-            g.drawString(text, 5, (i + 1) * 18);
+            g.drawString(text, getWidth() - fm.stringWidth(text), getHeight() - (i * 18));
         }
     }
 

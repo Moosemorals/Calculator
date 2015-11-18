@@ -24,6 +24,10 @@
 package com.moosemorals.calculator;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Start the GUI
@@ -32,10 +36,18 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
 
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            log.error("Can't set look and feel");
+        }
 
         Engine engine = new Engine();
         final UI ui = new UI(engine);
