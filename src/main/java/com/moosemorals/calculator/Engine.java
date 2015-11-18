@@ -38,6 +38,10 @@ import org.slf4j.LoggerFactory;
 public class Engine implements ListModel<String> {
 
     public static final String ENTER = "⏎";
+    public static final String DROP = "⊗";
+    public static final String ROOT = "√";
+    public static final String SWAP = "⇅";
+    public static final String CLEAR = "☠";
 
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
@@ -56,42 +60,12 @@ public class Engine implements ListModel<String> {
         return stack.peek();
     }
 
-    public void push(double value) {
-        stack.push(value);
-        notifyListeners();
-    }
-
-    public double pop() {
-        double value = stack.pop();
-        notifyListeners();
-        return value;
-    }
-
-    public void add() {
-        stack.push(stack.pop() + stack.pop());
-        notifyListeners();
-    }
-
-    public void subtract() {
-        double right = stack.pop();
-        double left = stack.pop();
-        stack.push(left - right);
-        notifyListeners();
-    }
-
-    public void multiply() {
-        stack.push(stack.pop() * stack.pop());
-        notifyListeners();
-    }
-
-    public void divide() {
-        double right = stack.pop();
-        double left = stack.pop();
-        stack.push(left / right);
-        notifyListeners();
+    public double peek(int d) {
+        return stack.peek(d);
     }
 
     public void click(String cmd) {
+        double left, right;
         switch (cmd) {
             case "0":
             case "1":
@@ -116,28 +90,50 @@ public class Engine implements ListModel<String> {
                 }
                 break;
             case "+":
+                stack.push(stack.pop() + stack.pop());
+                state = State.Display;
+                break;
             case "-":
+                right = stack.pop();
+                left = stack.pop();
+                stack.push(left - right);
+
+                state = State.Display;
+                break;
             case "*":
+                stack.push(stack.pop() * stack.pop());
+                state = State.Display;
+                break;
             case "/":
-                switch (cmd) {
-                    case "+":
-                        add();
-                        break;
-                    case "-":
-                        subtract();
-                        break;
-                    case "*":
-                        multiply();
-                        break;
-                    case "/":
-                        divide();
-                        break;
-                }
+                right = stack.pop();
+                left = stack.pop();
+                stack.push(left / right);
+                state = State.Display;
+                break;
+            case ROOT:
+                stack.push(Math.sqrt(stack.pop()));
                 state = State.Display;
                 break;
             case ENTER:
                 stack.push(0);
                 state = State.Decimal;
+                break;
+            case SWAP:
+                left = stack.pop();
+                right = stack.pop();
+                stack.push(left);
+                stack.push(right);
+                state = State.Display;
+                break;
+            case DROP:
+                stack.pop();
+                state = State.Display;
+                break;
+            case CLEAR:
+                while (stack.getDepth() > 0) {
+                    stack.pop();
+                }
+                state = State.Display;
                 break;
             case ".":
                 if (state == State.Display) {
@@ -155,10 +151,6 @@ public class Engine implements ListModel<String> {
 
     public int getDepth() {
         return stack.getDepth();
-    }
-
-    public double peek(int d) {
-        return stack.peek(d);
     }
 
     private void notifyListeners() {

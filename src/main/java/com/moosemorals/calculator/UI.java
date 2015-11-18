@@ -49,10 +49,10 @@ public class UI implements ActionListener {
 
     private static final String[] BUTTONS
             = {
-                "7", "8", "9", "+",
-                "4", "5", "6", "-",
-                "1", "2", "3", "*",
-                ".", "0", Engine.ENTER, "/"
+                Engine.ROOT, "7", "8", "9", "+",
+                Engine.SWAP, "4", "5", "6", "-",
+                Engine.DROP, "1", "2", "3", "*",
+                Engine.CLEAR, Engine.ENTER, "0", ".", "/"
             };
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
@@ -64,7 +64,7 @@ public class UI implements ActionListener {
 
     public void build() {
         JPanel numbers = new JPanel();
-        numbers.setLayout(new GridLayout(0, 4));
+        numbers.setLayout(new GridLayout(0, 5));
 
         for (int i = 0; i < BUTTONS.length; i += 1) {
             JButton button = new JButton();

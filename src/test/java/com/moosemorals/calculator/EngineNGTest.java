@@ -35,56 +35,6 @@ public class EngineNGTest {
     private static final double FUDGE = 0.0001;
 
     @Test
-    public void test_add() {
-        Engine e = new Engine();
-        e.push(1);
-        e.push(1);
-        e.add();
-
-        assertEquals(e.pop(), 2.0, FUDGE);
-    }
-
-    @Test
-    public void test_sub1() {
-        Engine e = new Engine();
-        e.push(1);
-        e.push(1);
-        e.subtract();
-
-        assertEquals(e.pop(), 0.0, FUDGE);
-    }
-
-    @Test
-    public void test_sub2() {
-        Engine e = new Engine();
-        e.push(2);
-        e.push(1);
-        e.subtract();
-
-        assertEquals(e.pop(), 1.0, FUDGE);
-    }
-
-    @Test
-    public void test_mut1() {
-        Engine e = new Engine();
-        e.push(2);
-        e.push(1);
-        e.multiply();
-
-        assertEquals(e.pop(), 2.0, FUDGE);
-    }
-
-    @Test
-    public void test_dev1() {
-        Engine e = new Engine();
-        e.push(1);
-        e.push(2);
-        e.divide();
-
-        assertEquals(e.pop(), 0.5, FUDGE);
-    }
-
-    @Test
     public void test_click1() {
         Engine e = new Engine();
         e.click("1");
