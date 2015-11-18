@@ -37,16 +37,18 @@ import org.slf4j.LoggerFactory;
  */
 public class Engine implements ListModel<String> {
 
+    public static final String ENTER = "⏎";
+
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<ListDataListener> dataListeners;
 
-    private double currentValue = 0.0;
     private int fraction = 1;
     private State state = State.Decimal;
 
     public Engine() {
         stack = new Stack();
+        stack.push(0);
         dataListeners = new HashSet<>();
     }
 
@@ -102,13 +104,13 @@ public class Engine implements ListModel<String> {
             case "8":
             case "9":
                 if (state == State.Decimal) {
-                    currentValue *= 10;
-                    currentValue += Double.parseDouble(cmd);
+                    stack.push(stack.pop() * 10.0 + Double.parseDouble(cmd));
                 } else if (state == State.Fraction) {
-                    currentValue += Double.parseDouble(cmd) / (Math.pow(10, fraction));
+                    stack.push(stack.pop() + Double.parseDouble(cmd) / (Math.pow(10, fraction)));
                     fraction += 1;
                 } else if (state == State.Display) {
-                    currentValue = Double.parseDouble(cmd);
+
+                    stack.push(Double.parseDouble(cmd));
                     fraction = 1;
                     state = State.Decimal;
                 }
@@ -117,9 +119,6 @@ public class Engine implements ListModel<String> {
             case "-":
             case "*":
             case "/":
-                if (state != State.Display) {
-                    stack.push(currentValue);
-                }
                 switch (cmd) {
                     case "+":
                         add();
@@ -134,16 +133,14 @@ public class Engine implements ListModel<String> {
                         divide();
                         break;
                 }
-                currentValue = 0;
                 state = State.Display;
                 break;
-            case "⏎":
-                stack.push(currentValue);
-                state = State.Display;
+            case ENTER:
+                stack.push(0);
+                state = State.Decimal;
                 break;
             case ".":
                 if (state == State.Display) {
-                    currentValue = 0;
                     fraction = 1;
                 }
                 state = State.Fraction;
@@ -175,19 +172,13 @@ public class Engine implements ListModel<String> {
 
     @Override
     public int getSize() {
-        return stack.getDepth() + 1;
+        return stack.getDepth();
 
     }
 
     @Override
     public String getElementAt(int index) {
-        int size = getSize() - 1;
-        if (size == 0 || index == size) {
-            return String.format("Current: %f", currentValue);
-        } else {
-            size -= 1;
-            return String.format("%d: %f", index, stack.peek(size - index));
-        }
+        return String.format("%f", stack.peek((stack.getDepth() - 1) - index));
     }
 
     @Override

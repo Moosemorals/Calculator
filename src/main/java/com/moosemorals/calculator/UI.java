@@ -49,7 +49,7 @@ public class UI implements ActionListener {
                 "7", "8", "9", "+",
                 "4", "5", "6", "-",
                 "1", "2", "3", "*",
-                ".", "0", "⏎", "/"
+                ".", "0", Engine.ENTER, "/"
             };
 
     private final Logger log = LoggerFactory.getLogger(UI.class);

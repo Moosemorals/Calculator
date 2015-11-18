@@ -32,6 +32,8 @@ import org.testng.annotations.Test;
  */
 public class EngineNGTest {
 
+    private static final double FUDGE = 0.0001;
+
     @Test
     public void test_add() {
         Engine e = new Engine();
@@ -39,7 +41,7 @@ public class EngineNGTest {
         e.push(1);
         e.add();
 
-        assertEquals(e.pop(), 2.0, 0.1);
+        assertEquals(e.pop(), 2.0, FUDGE);
     }
 
     @Test
@@ -49,7 +51,7 @@ public class EngineNGTest {
         e.push(1);
         e.subtract();
 
-        assertEquals(e.pop(), 0.0, 0.1);
+        assertEquals(e.pop(), 0.0, FUDGE);
     }
 
     @Test
@@ -59,7 +61,7 @@ public class EngineNGTest {
         e.push(1);
         e.subtract();
 
-        assertEquals(e.pop(), 1.0, 0.1);
+        assertEquals(e.pop(), 1.0, FUDGE);
     }
 
     @Test
@@ -69,7 +71,7 @@ public class EngineNGTest {
         e.push(1);
         e.multiply();
 
-        assertEquals(e.pop(), 2.0, 0.1);
+        assertEquals(e.pop(), 2.0, FUDGE);
     }
 
     @Test
@@ -79,6 +81,45 @@ public class EngineNGTest {
         e.push(2);
         e.divide();
 
-        assertEquals(e.pop(), 0.5, 0.1);
+        assertEquals(e.pop(), 0.5, FUDGE);
     }
+
+    @Test
+    public void test_click1() {
+        Engine e = new Engine();
+        e.click("1");
+        assertEquals(e.peek(), 1.0, FUDGE);
+    }
+
+    @Test
+    public void test_click2() {
+        Engine e = new Engine();
+        e.click("1");
+        e.click(".");
+        e.click("2");
+        assertEquals(e.peek(), 1.2, FUDGE);
+        assertEquals(e.getDepth(), 1);
+    }
+
+    @Test
+    public void test_click3() {
+        Engine e = new Engine();
+        e.click("1");
+        e.click(Engine.ENTER);
+        e.click("2");
+        assertEquals(e.peek(), 2, FUDGE);
+        assertEquals(e.getDepth(), 2);
+    }
+
+    @Test
+    public void test_click4() {
+        Engine e = new Engine();
+        e.click("1");
+        e.click(Engine.ENTER);
+        e.click("2");
+        e.click("+");
+        assertEquals(e.peek(), 3, FUDGE);
+        assertEquals(e.getDepth(), 1);
+    }
+
 }
