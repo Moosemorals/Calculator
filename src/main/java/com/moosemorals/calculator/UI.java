@@ -121,6 +121,7 @@ public class UI implements ActionListener {
         main.add(display);
         main.add(numbers);
         main.pack();
+        main.setResizable(false);
         main.setVisible(true);
     }
 
