@@ -28,6 +28,8 @@ import java.util.Set;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -35,8 +37,13 @@ import javax.swing.event.ListDataListener;
  */
 public class Engine implements ListModel<String> {
 
+    private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<ListDataListener> dataListeners;
+
+    private double currentValue = 0.0;
+    private int fraction = 1;
+    private State state = State.Decimal;
 
     public Engine() {
         stack = new Stack();
@@ -82,6 +89,73 @@ public class Engine implements ListModel<String> {
         notifyListeners();
     }
 
+    public void click(String cmd) {
+        switch (cmd) {
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+                if (state == State.Decimal) {
+                    currentValue *= 10;
+                    currentValue += Double.parseDouble(cmd);
+                } else if (state == State.Fraction) {
+                    currentValue += Double.parseDouble(cmd) / (Math.pow(10, fraction));
+                    fraction += 1;
+                } else if (state == State.Display) {
+                    currentValue = Double.parseDouble(cmd);
+                    fraction = 1;
+                    state = State.Decimal;
+                }
+                break;
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+                if (state != State.Display) {
+                    stack.push(currentValue);
+                }
+                switch (cmd) {
+                    case "+":
+                        add();
+                        break;
+                    case "-":
+                        subtract();
+                        break;
+                    case "*":
+                        multiply();
+                        break;
+                    case "/":
+                        divide();
+                        break;
+                }
+                currentValue = 0;
+                state = State.Display;
+                break;
+            case "⏎":
+                stack.push(currentValue);
+                state = State.Display;
+                break;
+            case ".":
+                if (state == State.Display) {
+                    currentValue = 0;
+                    fraction = 1;
+                }
+                state = State.Fraction;
+
+                break;
+            default:
+                log.warn("Don't know about that");
+                break;
+        }
+        notifyListeners();
+    }
+
     public int getDepth() {
         return stack.getDepth();
     }
@@ -101,12 +175,19 @@ public class Engine implements ListModel<String> {
 
     @Override
     public int getSize() {
-        return stack.getDepth();
+        return stack.getDepth() + 1;
+
     }
 
     @Override
     public String getElementAt(int index) {
-        return String.format("%f", stack.peek(index));
+        int size = getSize() - 1;
+        if (size == 0 || index == size) {
+            return String.format("Current: %f", currentValue);
+        } else {
+            size -= 1;
+            return String.format("%d: %f", index, stack.peek(size - index));
+        }
     }
 
     @Override
@@ -121,5 +202,10 @@ public class Engine implements ListModel<String> {
         synchronized (dataListeners) {
             dataListeners.remove(l);
         }
+    }
+
+    private enum State {
+
+        Decimal, Fraction, Display;
     }
 }

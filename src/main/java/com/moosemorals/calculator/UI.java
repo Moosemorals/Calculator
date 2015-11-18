@@ -27,13 +27,10 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +54,6 @@ public class UI implements ActionListener {
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
     private final Engine engine;
-    private JLabel display;
-    private double currentValue = 0.0;
-    private int fraction = 1;
-    private State state = State.Decimal;
 
     public UI(Engine engine) {
         this.engine = engine;
@@ -83,25 +76,14 @@ public class UI implements ActionListener {
         stackList.setModel(engine);
         stackList.setCellRenderer(new StackCellRenderer());
 
-        display = new JLabel();
-        display.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        JPanel top = new JPanel();
-        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
-
-        top.add(stackList);
-        top.add(display);
-
         JFrame main = new JFrame("Calculator");
         main.setSize(480, 640);
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         main.setLayout(new BorderLayout());
-        main.add(top, BorderLayout.NORTH);
+        main.add(stackList, BorderLayout.NORTH);
         main.add(numbers, BorderLayout.CENTER);
         main.pack();
         main.setVisible(true);
-
-        updateDisplay();
     }
 
     @Override
@@ -117,84 +99,6 @@ public class UI implements ActionListener {
 
         cmd = cmd.substring(CMD_PREFIX.length());
 
-        switch (cmd) {
-            case "0":
-            case "1":
-            case "2":
-            case "3":
-            case "4":
-            case "5":
-            case "6":
-            case "7":
-            case "8":
-            case "9":
-                if (state == State.Decimal) {
-                    currentValue *= 10;
-                    currentValue += Double.parseDouble(cmd);
-                } else if (state == State.Fraction) {
-                    currentValue += Double.parseDouble(cmd) / (Math.pow(10, fraction));
-                    fraction += 1;
-                } else if (state == State.Display) {
-                    currentValue = Double.parseDouble(cmd);
-                    fraction = 1;
-                    state = State.Decimal;
-                }
-                break;
-            case "+":
-            case "-":
-            case "*":
-            case "/":
-                if (state != State.Display) {
-                    engine.push(currentValue);
-                }
-                switch (cmd) {
-                    case "+":
-                        engine.add();
-                        break;
-                    case "-":
-                        engine.subtract();
-                        break;
-                    case "*":
-                        engine.multiply();
-                        break;
-                    case "/":
-                        engine.divide();
-                        break;
-                }
-                currentValue = engine.peek();
-                state = State.Display;
-                break;
-            case "⏎":
-                engine.push(currentValue);
-                state = State.Display;
-                break;
-            case ".":
-                if (state == State.Display) {
-                    currentValue = 0;
-                    fraction = 1;
-                }
-                state = State.Fraction;
-
-                break;
-            default:
-                log.warn("Don't know about that");
-                break;
-
-        }
-        updateDisplay();
-    }
-
-    private void updateDisplay() {
-        if (state == State.Display) {
-            display.setVisible(false);
-        } else {
-            display.setVisible(true);
-            display.setText(String.format("%f", currentValue));
-        }
-    }
-
-    private enum State {
-
-        Decimal, Fraction, Display;
+        engine.click(cmd);
     }
 }
