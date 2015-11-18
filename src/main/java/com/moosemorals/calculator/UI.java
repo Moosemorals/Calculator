@@ -27,9 +27,9 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import org.slf4j.Logger;
@@ -71,15 +71,15 @@ public class UI implements ActionListener {
             numbers.add(button);
         }
 
-        final JFrame main = new JFrame("Calculator");
-        JList stackList = new JList();
-        stackList.setModel(engine);
-        stackList.setCellRenderer(new StackCellRenderer());
+        EngineDisplay display = new EngineDisplay(engine);
 
-        main.setSize(480, 900);
+        engine.addListDataListener(display);
+        JFrame main = new JFrame("Calculator");
+
+        //    main.setSize(480, 900);
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        main.setLayout(new BorderLayout());
-        main.add(stackList, BorderLayout.CENTER);
+        main.getContentPane().setLayout(new BoxLayout(main.getContentPane(), BoxLayout.X_AXIS));
+        main.add(display, BorderLayout.CENTER);
         main.add(numbers, BorderLayout.SOUTH);
         main.pack();
         main.setVisible(true);
