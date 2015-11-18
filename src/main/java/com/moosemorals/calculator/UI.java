@@ -27,9 +27,11 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -55,8 +57,8 @@ public class UI implements ActionListener {
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
     private final Engine engine;
-    private JLabel result;
-    private double currentValue = 0;
+    private JLabel display;
+    private double currentValue = 0.0;
     private int fraction = 1;
     private State state = State.Decimal;
 
@@ -77,16 +79,29 @@ public class UI implements ActionListener {
             numbers.add(button);
         }
 
-        result = new JLabel("0", SwingConstants.RIGHT);
+        JList stackList = new JList();
+        stackList.setModel(engine);
+        stackList.setCellRenderer(new StackCellRenderer());
+
+        display = new JLabel();
+        display.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        JPanel top = new JPanel();
+        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
+
+        top.add(stackList);
+        top.add(display);
 
         JFrame main = new JFrame("Calculator");
         main.setSize(480, 640);
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         main.setLayout(new BorderLayout());
-        main.add(result, BorderLayout.NORTH);
+        main.add(top, BorderLayout.NORTH);
         main.add(numbers, BorderLayout.CENTER);
         main.pack();
         main.setVisible(true);
+
+        updateDisplay();
     }
 
     @Override
@@ -126,24 +141,28 @@ public class UI implements ActionListener {
                 }
                 break;
             case "+":
-                engine.push(currentValue);
-                engine.add();
-                currentValue = engine.peek();
-                break;
             case "-":
-                engine.push(currentValue);
-                engine.subtract();
-                currentValue = engine.peek();
-                break;
             case "*":
-                engine.push(currentValue);
-                engine.multiply();
-                currentValue = engine.peek();
-                break;
             case "/":
-                engine.push(currentValue);
-                engine.divide();
+                if (state != State.Display) {
+                    engine.push(currentValue);
+                }
+                switch (cmd) {
+                    case "+":
+                        engine.add();
+                        break;
+                    case "-":
+                        engine.subtract();
+                        break;
+                    case "*":
+                        engine.multiply();
+                        break;
+                    case "/":
+                        engine.divide();
+                        break;
+                }
                 currentValue = engine.peek();
+                state = State.Display;
                 break;
             case "⏎":
                 engine.push(currentValue);
@@ -166,7 +185,12 @@ public class UI implements ActionListener {
     }
 
     private void updateDisplay() {
-        result.setText(String.format("%f", currentValue));
+        if (state == State.Display) {
+            display.setVisible(false);
+        } else {
+            display.setVisible(true);
+            display.setText(String.format("%f", currentValue));
+        }
     }
 
     private enum State {

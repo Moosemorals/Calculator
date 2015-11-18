@@ -62,6 +62,23 @@ public class StackNGTest {
     }
 
     @Test
+    public void test_peek2() {
+        Stack s = new Stack();
+        s.push(1);
+        s.push(2);
+        s.push(3);
+        assertEquals(s.peek(0), 3, 0.1);
+        assertEquals(s.peek(1), 2, 0.1);
+        assertEquals(s.peek(2), 1, 0.1);
+    }
+
+    @Test(expectedExceptions = IndexOutOfBoundsException.class)
+    public void test_peak3() {
+        Stack s = new Stack();
+        s.peek(0);
+    }
+
+    @Test
     public void test_emptyPop() {
         Stack s = new Stack();
         assertTrue(Double.isNaN(s.pop()));
@@ -69,14 +86,24 @@ public class StackNGTest {
 
     @Test
     public void test_extend() {
-
         Stack s = new Stack();
-
         for (int i = 0; i < Stack.INITIAL_SIZE * 2; i += 1) {
             s.push(i);
         }
-
         assertEquals(s.pop(), Stack.INITIAL_SIZE * 2 - 1, 0.1);
+    }
+
+    @Test
+    public void test_getDepth1() {
+        Stack s = new Stack();
+        assertEquals(s.getDepth(), 0);
+    }
+
+    @Test
+    public void test_getDepth2() {
+        Stack s = new Stack();
+        s.push(1);
+        assertEquals(s.getDepth(), 1);
     }
 
 }

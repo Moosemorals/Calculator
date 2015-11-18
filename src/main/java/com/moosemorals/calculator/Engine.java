@@ -23,16 +23,24 @@
  */
 package com.moosemorals.calculator;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+
 /**
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Engine {
+public class Engine implements ListModel<String> {
 
     private final Stack stack;
+    private final Set<ListDataListener> dataListeners;
 
     public Engine() {
         stack = new Stack();
+        dataListeners = new HashSet<>();
     }
 
     public double peek() {
@@ -41,30 +49,77 @@ public class Engine {
 
     public void push(double value) {
         stack.push(value);
+        notifyListeners();
     }
 
     public double pop() {
-        return stack.pop();
+        double value = stack.pop();
+        notifyListeners();
+        return value;
     }
 
     public void add() {
         stack.push(stack.pop() + stack.pop());
+        notifyListeners();
     }
 
     public void subtract() {
         double right = stack.pop();
         double left = stack.pop();
         stack.push(left - right);
+        notifyListeners();
     }
 
     public void multiply() {
         stack.push(stack.pop() * stack.pop());
+        notifyListeners();
     }
 
     public void divide() {
         double right = stack.pop();
         double left = stack.pop();
         stack.push(left / right);
+        notifyListeners();
     }
 
+    public int getDepth() {
+        return stack.getDepth();
+    }
+
+    public double peek(int d) {
+        return stack.peek(d);
+    }
+
+    private void notifyListeners() {
+        ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, stack.getDepth());
+        synchronized (dataListeners) {
+            for (ListDataListener l : dataListeners) {
+                l.contentsChanged(e);
+            }
+        }
+    }
+
+    @Override
+    public int getSize() {
+        return stack.getDepth();
+    }
+
+    @Override
+    public String getElementAt(int index) {
+        return String.format("%f", stack.peek(index));
+    }
+
+    @Override
+    public void addListDataListener(ListDataListener l) {
+        synchronized (dataListeners) {
+            dataListeners.add(l);
+        }
+    }
+
+    @Override
+    public void removeListDataListener(ListDataListener l) {
+        synchronized (dataListeners) {
+            dataListeners.remove(l);
+        }
+    }
 }

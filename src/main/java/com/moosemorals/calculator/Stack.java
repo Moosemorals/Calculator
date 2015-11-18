@@ -42,12 +42,14 @@ public final class Stack {
     public Stack() {
         lock = new Object();
         backingArray = new double[INITIAL_SIZE];
+        for (int i = 0; i < INITIAL_SIZE; i += 1) {
+            backingArray[i] = Double.NaN;
+        }
         depth = 0;
     }
 
     public double pop() {
         synchronized (lock) {
-            log.debug("pop:  depth: {}", depth);
             if (depth >= 1) {
                 return backingArray[--depth];
             } else {
@@ -59,12 +61,13 @@ public final class Stack {
     public void push(double value) {
         synchronized (lock) {
             if (depth == backingArray.length - 1) {
-                log.debug("Extending from {}", backingArray.length);
                 double[] temp = new double[backingArray.length * 2];
+                for (int i = 0; i < temp.length; i += 1) {
+                    temp[i] = Double.NaN;
+                }
                 System.arraycopy(backingArray, 0, temp, 0, backingArray.length);
                 backingArray = temp;
             }
-            log.debug("push: depth: {}", depth);
             backingArray[depth++] = value;
         }
     }
@@ -73,6 +76,22 @@ public final class Stack {
         synchronized (lock) {
             return backingArray[depth - 1];
         }
+    }
+
+    public double peek(int d) {
+        if (d < 0) {
+            throw new IndexOutOfBoundsException("Trying to peak at negative stack.");
+        }
+        if (d >= depth) {
+            throw new IndexOutOfBoundsException("Trying to peak past end of stack: Wanted " + d + ", can have: " + depth);
+        }
+        synchronized (lock) {
+            return backingArray[(depth - 1) - d];
+        }
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
 }
