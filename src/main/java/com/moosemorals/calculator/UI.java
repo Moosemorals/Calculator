@@ -60,7 +60,6 @@ public class UI implements ActionListener {
     }
 
     public void build() {
-
         JPanel numbers = new JPanel();
         numbers.setLayout(new GridLayout(0, 4));
 
@@ -72,16 +71,16 @@ public class UI implements ActionListener {
             numbers.add(button);
         }
 
+        final JFrame main = new JFrame("Calculator");
         JList stackList = new JList();
         stackList.setModel(engine);
         stackList.setCellRenderer(new StackCellRenderer());
 
-        JFrame main = new JFrame("Calculator");
-        main.setSize(480, 640);
+        main.setSize(480, 900);
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         main.setLayout(new BorderLayout());
-        main.add(stackList, BorderLayout.NORTH);
-        main.add(numbers, BorderLayout.CENTER);
+        main.add(stackList, BorderLayout.CENTER);
+        main.add(numbers, BorderLayout.SOUTH);
         main.pack();
         main.setVisible(true);
     }
