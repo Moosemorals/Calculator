@@ -99,7 +99,7 @@ public class UI implements ActionListener {
 
                     for (int i = 0; i < KEYS.length; i += 1) {
                         if (KEYS[i] == key) {
-                            engine.click(LABLES[i]);
+                            engine.command(LABLES[i]);
                             return false;
                         }
                     }
@@ -133,6 +133,6 @@ public class UI implements ActionListener {
 
         cmd = cmd.substring(CMD_PREFIX.length());
 
-        engine.click(cmd);
+        engine.command(cmd);
     }
 }

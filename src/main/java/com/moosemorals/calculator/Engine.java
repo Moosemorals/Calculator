@@ -68,7 +68,7 @@ public class Engine implements ListModel<String> {
         return stack.peek(d);
     }
 
-    public void click(String cmd) {
+    public void command(String cmd) {
         double left, right;
         switch (cmd) {
             case "0":
@@ -119,7 +119,9 @@ public class Engine implements ListModel<String> {
                 state = State.Display;
                 break;
             case ENTER:
-                stack.push(0);
+                if (stack.peek() != 0) {
+                    stack.push(0);
+                }
                 state = State.Decimal;
                 break;
             case SWAP:

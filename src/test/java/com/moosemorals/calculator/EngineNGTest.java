@@ -37,16 +37,16 @@ public class EngineNGTest {
     @Test
     public void test_click1() {
         Engine e = new Engine();
-        e.click("1");
+        e.command("1");
         assertEquals(e.peek(), 1.0, FUDGE);
     }
 
     @Test
     public void test_click2() {
         Engine e = new Engine();
-        e.click("1");
-        e.click(".");
-        e.click("2");
+        e.command("1");
+        e.command(".");
+        e.command("2");
         assertEquals(e.peek(), 1.2, FUDGE);
         assertEquals(e.getDepth(), 1);
     }
@@ -54,9 +54,9 @@ public class EngineNGTest {
     @Test
     public void test_click3() {
         Engine e = new Engine();
-        e.click("1");
-        e.click(Engine.ENTER);
-        e.click("2");
+        e.command("1");
+        e.command(Engine.ENTER);
+        e.command("2");
         assertEquals(e.peek(), 2, FUDGE);
         assertEquals(e.getDepth(), 2);
     }
@@ -64,10 +64,10 @@ public class EngineNGTest {
     @Test
     public void test_click4() {
         Engine e = new Engine();
-        e.click("1");
-        e.click(Engine.ENTER);
-        e.click("2");
-        e.click("+");
+        e.command("1");
+        e.command(Engine.ENTER);
+        e.command("2");
+        e.command(Engine.PLUS);
         assertEquals(e.peek(), 3, FUDGE);
         assertEquals(e.getDepth(), 1);
     }
