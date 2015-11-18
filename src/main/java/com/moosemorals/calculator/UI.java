@@ -25,8 +25,11 @@ package com.moosemorals.calculator;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -72,8 +75,31 @@ public class UI implements ActionListener {
         }
 
         EngineDisplay display = new EngineDisplay(engine);
-
         engine.addListDataListener(display);
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if (e.getID() == KeyEvent.KEY_TYPED) {
+                    String key = new String(new char[]{e.getKeyChar()});
+
+                    // This won't catch the funky Engine.ENTER button
+                    for (String cmd : BUTTONS) {
+                        if (cmd.equals(key)) {
+                            engine.click(cmd);
+                            return false;
+                        }
+                    }
+                    if (key.equals("\n")) {
+                        engine.click(Engine.ENTER);
+                    }
+                }
+
+                return false;
+            }
+        });
+
         JFrame main = new JFrame("Calculator");
 
         //    main.setSize(480, 900);

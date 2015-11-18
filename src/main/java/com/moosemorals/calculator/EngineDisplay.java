@@ -59,7 +59,6 @@ public class EngineDisplay extends JComponent implements ListDataListener {
         for (int i = 0; i < engine.getDepth(); i += 1) {
             String text = String.format("%f", engine.peek(i));
             g.drawString(text, 5, (i + 1) * 18);
-            log.debug("Drawing text {} at {}", text, i);
         }
     }
 
@@ -75,7 +74,6 @@ public class EngineDisplay extends JComponent implements ListDataListener {
 
     @Override
     public void contentsChanged(ListDataEvent e) {
-        log.debug("Contents changed");
         repaint();
     }
 
