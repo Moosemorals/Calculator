@@ -42,6 +42,10 @@ public class Engine implements ListModel<String> {
     public static final String ROOT = "√";
     public static final String SWAP = "⇅";
     public static final String CLEAR = "☠";
+    public static final String MINUS = "\u2796";
+    public static final String PLUS = "\u2795";
+    public static final String DIVIDE = "\u2797";
+    public static final String MULTIPLY = "\u2716";
 
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
@@ -89,22 +93,22 @@ public class Engine implements ListModel<String> {
                     state = State.Decimal;
                 }
                 break;
-            case "+":
+            case PLUS:
                 stack.push(stack.pop() + stack.pop());
                 state = State.Display;
                 break;
-            case "-":
+            case MINUS:
                 right = stack.pop();
                 left = stack.pop();
                 stack.push(left - right);
 
                 state = State.Display;
                 break;
-            case "*":
+            case MULTIPLY:
                 stack.push(stack.pop() * stack.pop());
                 state = State.Display;
                 break;
-            case "/":
+            case DIVIDE:
                 right = stack.pop();
                 left = stack.pop();
                 stack.push(left / right);

@@ -23,6 +23,7 @@
  */
 package com.moosemorals.calculator;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.KeyEventDispatcher;
@@ -47,13 +48,19 @@ public class UI implements ActionListener {
 
     private static final String CMD_PREFIX = "BTN";
 
-    private static final String[] BUTTONS
-            = {
-                Engine.ROOT, "7", "8", "9", "+",
-                Engine.SWAP, "4", "5", "6", "-",
-                Engine.DROP, "1", "2", "3", "*",
-                Engine.CLEAR, ".", "0", Engine.ENTER, "/"
-            };
+    private static final String[] LABLES = {
+        Engine.ROOT, "7", "8", "9", Engine.PLUS,
+        Engine.SWAP, "4", "5", "6", Engine.MINUS,
+        Engine.DROP, "1", "2", "3", Engine.MULTIPLY,
+        Engine.CLEAR, ".", "0", Engine.ENTER, Engine.DIVIDE
+    };
+
+    private static final char[] KEYS = {
+        0, '7', '8', '9', '+',
+        0, '4', '5', '6', '-',
+        0, '1', '2', '3', '*',
+        0, '.', '0', '\n', '/'
+    };
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
     private final Engine engine;
@@ -66,14 +73,16 @@ public class UI implements ActionListener {
         JPanel numbers = new JPanel();
         numbers.setLayout(new GridLayout(0, 5));
 
-        Font font = new Font("SansSerif", Font.PLAIN, 14);
+        Font font = new Font("Monospaced", Font.PLAIN, 16);
 
-        for (int i = 0; i < BUTTONS.length; i += 1) {
+        for (int i = 0; i < LABLES.length; i += 1) {
             JButton button = new JButton();
-            button.setText(BUTTONS[i]);
-            button.setActionCommand(String.format("%s%s", CMD_PREFIX, BUTTONS[i]));
+            button.setText(LABLES[i]);
+            button.setActionCommand(String.format("%s%s", CMD_PREFIX, LABLES[i]));
             button.addActionListener(this);
             button.setFont(font);
+            button.setPreferredSize(new Dimension(48, 48));
+            button.setFocusable(false);
             numbers.add(button);
         }
 
@@ -86,17 +95,13 @@ public class UI implements ActionListener {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 if (e.getID() == KeyEvent.KEY_TYPED) {
-                    String key = new String(new char[]{e.getKeyChar()});
+                    char key = e.getKeyChar();
 
-                    // This won't catch the funky Engine.ENTER button
-                    for (String cmd : BUTTONS) {
-                        if (cmd.equals(key)) {
-                            engine.click(cmd);
+                    for (int i = 0; i < KEYS.length; i += 1) {
+                        if (KEYS[i] == key) {
+                            engine.click(LABLES[i]);
                             return false;
                         }
-                    }
-                    if (key.equals("\n")) {
-                        engine.click(Engine.ENTER);
                     }
                 }
 

@@ -26,6 +26,7 @@ package com.moosemorals.calculator;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.text.DecimalFormat;
 import javax.swing.JComponent;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -38,11 +39,15 @@ import org.slf4j.LoggerFactory;
  */
 public class EngineDisplay extends JComponent implements ListDataListener {
 
+    private static final int BORDER = 5;
+
     private final Logger log = LoggerFactory.getLogger(EngineDisplay.class);
     private final Engine engine;
+    private final DecimalFormat df;
 
     public EngineDisplay(Engine engine) {
         this.engine = engine;
+        df = new DecimalFormat("#,##0.0#######");
     }
 
     @Override
@@ -61,8 +66,12 @@ public class EngineDisplay extends JComponent implements ListDataListener {
         }
 
         for (int i = 0; i < engine.getDepth(); i += 1) {
-            String text = String.format("%f", engine.peek(i));
-            g.drawString(text, getWidth() - fm.stringWidth(text), getHeight() - (i * 18));
+            String text = df.format(engine.peek(i));
+
+            int x = getWidth() - fm.stringWidth(text) - BORDER;
+            int y = getHeight() - (i * fm.getHeight()) - BORDER;
+
+            g.drawString(text, x, y);
         }
     }
 
