@@ -12,6 +12,26 @@
     </properties>
     <name>Calculator</name>
     <description>A basic desktop calculator</description>
+    <licenses>
+        <license>
+            <name>MIT Licence</name>
+            <url>http://opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Osric Wilkinson</name>
+            <email>osric@fluffypeople.com</email>
+            <url>https://moosemorals.com</url>
+            <timezone>Europe/London</timezone>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/Moosemorals/Calculator.git</connection>
+        <developerConnection>scm:git:file:///${basedir}</developerConnection>
+    </scm>
+    <url>https://github.com/Moosemorals/Calculator</url>
     <build>
         <plugins>
             <plugin>
