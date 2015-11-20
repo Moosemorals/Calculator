@@ -24,6 +24,7 @@
 package com.moosemorals.calculator;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashSet;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -56,7 +57,9 @@ public class Engine {
         stack = new Stack();
         stack.push(0);
         engineWatchers = new HashSet<>();
-        df = new DecimalFormat("#,##0.0#######");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setNaN("Err");
+        df = new DecimalFormat("#,##0.#########", symbols);
     }
 
     public double peek() {
@@ -97,6 +100,13 @@ public class Engine {
                     state = State.Decimal;
                 }
                 break;
+            case ".":
+                if (state == State.Display) {
+                    fraction = 1;
+                }
+                state = State.Fraction;
+
+                break;
             case PLUS:
                 stack.push(stack.pop() + stack.pop());
                 state = State.Display;
@@ -123,9 +133,7 @@ public class Engine {
                 state = State.Display;
                 break;
             case ENTER:
-                if (stack.peek() != 0) {
-                    stack.push(0);
-                }
+                stack.push(0);
                 state = State.Decimal;
                 break;
             case SWAP:
@@ -144,13 +152,6 @@ public class Engine {
                     stack.pop();
                 }
                 state = State.Display;
-                break;
-            case ".":
-                if (state == State.Display) {
-                    fraction = 1;
-                }
-                state = State.Fraction;
-
                 break;
             default:
                 log.warn("Don't know about that");
