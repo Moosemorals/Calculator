@@ -26,9 +26,6 @@ package com.moosemorals.calculator;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Engine implements ListModel<String> {
+public class Engine {
 
     public static final String ENTER = "⏎";
     public static final String DROP = "⊗";
@@ -50,7 +47,7 @@ public class Engine implements ListModel<String> {
 
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
-    private final Set<ListDataListener> dataListeners;
+    private final Set<EngineWatcher> engineWatchers;
     private final DecimalFormat df;
     private int fraction = 1;
     private State state = State.Decimal;
@@ -58,7 +55,7 @@ public class Engine implements ListModel<String> {
     public Engine() {
         stack = new Stack();
         stack.push(0);
-        dataListeners = new HashSet<>();
+        engineWatchers = new HashSet<>();
         df = new DecimalFormat("#,##0.0#######");
     }
 
@@ -166,37 +163,27 @@ public class Engine implements ListModel<String> {
         return stack.getDepth();
     }
 
-    private void notifyListeners() {
-        ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, stack.getDepth());
-        synchronized (dataListeners) {
-            for (ListDataListener l : dataListeners) {
-                l.contentsChanged(e);
-            }
-        }
-    }
-
-    @Override
-    public int getSize() {
-        return stack.getDepth();
-
-    }
-
-    @Override
     public String getElementAt(int index) {
         return df.format(stack.peek(index));
     }
 
-    @Override
-    public void addListDataListener(ListDataListener l) {
-        synchronized (dataListeners) {
-            dataListeners.add(l);
+    private void notifyListeners() {
+        synchronized (engineWatchers) {
+            for (EngineWatcher watcher : engineWatchers) {
+                watcher.onEngineChanged();
+            }
         }
     }
 
-    @Override
-    public void removeListDataListener(ListDataListener l) {
-        synchronized (dataListeners) {
-            dataListeners.remove(l);
+    public void addEngineWatcher(EngineWatcher watcher) {
+        synchronized (engineWatchers) {
+            engineWatchers.add(watcher);
+        }
+    }
+
+    public void removeEngineWatcher(EngineWatcher watcher) {
+        synchronized (engineWatchers) {
+            engineWatchers.remove(watcher);
         }
     }
 

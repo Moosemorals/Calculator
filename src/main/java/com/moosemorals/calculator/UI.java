@@ -90,7 +90,7 @@ public class UI implements ActionListener {
 
         EngineDisplay display = new EngineDisplay(engine);
         display.setFont(font);
-        engine.addListDataListener(display);
+        engine.addEngineWatcher(display);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
