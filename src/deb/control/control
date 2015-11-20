@@ -1,0 +1,9 @@
+Package: [[name]] 
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Depends: jdk (>= 1.7)
+Maintainer: Osric Wilkinson <osric@fluffypeople.com>
+Description: Very basic Java calculator
+Distribution: development
