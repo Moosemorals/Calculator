@@ -52,7 +52,6 @@ public class ConfigFileParser extends BaseParser<Config> {
 
             switch (parser.getLocalName()) {
                 case "buttons":
-                    log.debug("Parsing buttons");
                     builder.addButtons(new ButtonsParser().parse(parser));
                     break;
                 case "config":

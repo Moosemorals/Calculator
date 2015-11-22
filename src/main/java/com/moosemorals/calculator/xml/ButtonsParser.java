@@ -54,17 +54,14 @@ public class ButtonsParser extends BaseParser<List<Button>> {
 
             switch (parser.getLocalName()) {
                 case "button":
-                    log.debug("Parsing button");
                     buttons.add(parseButton(parser));
                     break;
-
                 default:
                     log.error("Unexpected tag {} at {}, skiping", parser.getLocalName(), getLocation(parser));
                     skipTag(parser);
                     break;
             }
         }
-        log.debug("Got {} buttons", buttons.size());
         return buttons;
     }
 

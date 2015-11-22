@@ -62,7 +62,6 @@ public class UI implements ActionListener {
     }
 
     public void build() throws IOException {
-        log.debug("We've got {} cols and {} buttons", config.getCols(), config.getButtonCount());
         JPanel numbers = new JPanel();
         numbers.setLayout(new GridLayout(0, config.getCols()));
 
@@ -116,6 +115,8 @@ public class UI implements ActionListener {
                                 // ignored, but no point trying to add the number
                             }
                         }
+                    } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                        log.debug("Trying to delete, eh?");
                     }
                 }
                 return false;
