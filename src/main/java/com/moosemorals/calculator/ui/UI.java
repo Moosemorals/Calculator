@@ -28,6 +28,7 @@ import com.moosemorals.calculator.Engine;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -79,6 +80,7 @@ public class UI implements ActionListener {
             c.gridwidth = button.getWidth();
 
             b.setText(button.getLabel());
+            b.setMargin(new Insets(0, 0, 0, 0));
             b.setActionCommand(String.format("%s%s", CMD_PREFIX, button.getLabel()));
             b.addActionListener(this);
             b.setPreferredSize(new Dimension(config.getSize() * button.getWidth(), config.getSize() * button.getHeight()));
