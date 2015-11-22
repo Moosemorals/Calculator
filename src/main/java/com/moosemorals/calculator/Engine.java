@@ -46,6 +46,7 @@ public class Engine {
     public static final String DIVIDE = "\u2797";
     public static final String MULTIPLY = "\u2716";
 
+    private static final String DEFAULT_PATTERN = "#,##0.#########";
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<EngineWatcher> engineWatchers;
@@ -59,7 +60,7 @@ public class Engine {
         engineWatchers = new HashSet<>();
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setNaN("Err");
-        df = new DecimalFormat("#,##0.#########", symbols);
+        df = new DecimalFormat(DEFAULT_PATTERN, symbols);
     }
 
     public double peek() {
@@ -170,12 +171,17 @@ public class Engine {
     }
 
     public String getElementAt(int index) {
-        StringBuilder pattern = new StringBuilder();
-        pattern.append("#,##0.");
-        for (int i = 1; i < fraction; i += 1) {
-            pattern.append("0");
+        if (index == 0 && state == State.Fraction) {
+            StringBuilder pattern = new StringBuilder();
+            pattern.append("#,##0.");
+            for (int i = 1; i < fraction; i += 1) {
+                pattern.append("0");
+            }
+            pattern.append("######");
+            df.applyPattern(pattern.toString());
+        } else {
+            df.applyPattern(DEFAULT_PATTERN);
         }
-        df.applyPattern(pattern.toString());
         return df.format(stack.peek(index));
     }
 
