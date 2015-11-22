@@ -73,12 +73,21 @@ public class ButtonsParser extends BaseParser<List<Button>> {
         builder.setX(readIntAttribute(parser, "x"));
         builder.setY(readIntAttribute(parser, "y"));
 
-        String raw = parser.getAttributeValue(NAMESPACE, "size");
-        if (raw != null) {
+        String raw = parser.getAttributeValue(NAMESPACE, "width");
+        if (raw != null && !raw.isEmpty()) {
             try {
-                builder.setSize(Double.parseDouble(raw));
+                builder.setWidth(Integer.parseInt(raw, 10));
             } catch (NumberFormatException ex) {
-                throw new XMLStreamException("Can't parse size [" + raw + "] at " + getLocation(parser) + ": " + ex.getMessage(), ex);
+                throw new XMLStreamException("Can't parse width [" + raw + "] at " + getLocation(parser) + ": " + ex.getMessage(), ex);
+            }
+        }
+
+        raw = parser.getAttributeValue(NAMESPACE, "height");
+        if (raw != null && !raw.isEmpty()) {
+            try {
+                builder.setHeight(Integer.parseInt(raw, 10));
+            } catch (NumberFormatException ex) {
+                throw new XMLStreamException("Can't parse height [" + raw + "] at " + getLocation(parser) + ": " + ex.getMessage(), ex);
             }
         }
 

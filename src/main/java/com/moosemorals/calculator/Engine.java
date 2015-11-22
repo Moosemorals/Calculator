@@ -170,6 +170,12 @@ public class Engine {
     }
 
     public String getElementAt(int index) {
+        StringBuilder pattern = new StringBuilder();
+        pattern.append("#,##0.");
+        for (int i = 1; i < fraction; i += 1) {
+            pattern.append("0");
+        }
+        df.applyPattern(pattern.toString());
         return df.format(stack.peek(index));
     }
 

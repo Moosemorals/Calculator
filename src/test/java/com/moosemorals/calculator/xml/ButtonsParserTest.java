@@ -51,6 +51,8 @@ public class ButtonsParserTest {
         assertEquals(firstButton.getLabel(), "");
         assertEquals(firstButton.getCode(), null);
         assertEquals(firstButton.getKey(), 0);
+        assertEquals(firstButton.getWidth(), 1);
+        assertEquals(firstButton.getHeight(), 1);
 
         Button secondButton = buttons.get(1);
         assertEquals(secondButton.getX(), 1);
@@ -58,6 +60,8 @@ public class ButtonsParserTest {
         assertEquals(secondButton.getLabel(), "Test");
         assertEquals(secondButton.getCode(), "NOOP");
         assertEquals(secondButton.getKey(), 't');
+        assertEquals(secondButton.getWidth(), 5);
+        assertEquals(secondButton.getHeight(), 2);
 
         Button thirdButton = buttons.get(2);
         assertEquals(thirdButton.getLabel(), "\u221A");

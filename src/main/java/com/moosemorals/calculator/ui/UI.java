@@ -26,7 +26,8 @@ package com.moosemorals.calculator.ui;
 import com.moosemorals.calculator.Config;
 import com.moosemorals.calculator.Engine;
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -63,18 +64,26 @@ public class UI implements ActionListener {
 
     public void build() throws IOException {
         JPanel numbers = new JPanel();
-        numbers.setLayout(new GridLayout(0, config.getCols()));
+        numbers.setLayout(new GridBagLayout());
 
         //       Font font = new Font("Monospaced", Font.PLAIN, 12);
         for (int i = 0; i < config.getButtonCount(); i += 1) {
-            JButton button = new JButton();
-            String label = config.getButton(i).getLabel();
-            button.setText(label);
-            button.setActionCommand(String.format("%s%s", CMD_PREFIX, label));
-            button.addActionListener(this);
-            button.setPreferredSize(new Dimension(config.getSize(), config.getSize()));
-            button.setFocusable(false);
-            numbers.add(button);
+            Button button = config.getButton(i);
+            JButton b = new JButton();
+
+            GridBagConstraints c = new GridBagConstraints();
+
+            c.gridx = button.getX();
+            c.gridy = button.getY();
+            c.gridheight = button.getHeight();
+            c.gridwidth = button.getWidth();
+
+            b.setText(button.getLabel());
+            b.setActionCommand(String.format("%s%s", CMD_PREFIX, button.getLabel()));
+            b.addActionListener(this);
+            b.setPreferredSize(new Dimension(config.getSize() * button.getWidth(), config.getSize() * button.getHeight()));
+            b.setFocusable(false);
+            numbers.add(b, c);
         }
 
         EngineDisplay display = new EngineDisplay(config, engine);

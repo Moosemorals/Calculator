@@ -28,7 +28,7 @@ THE SOFTWARE.
     <button x="0" y="0" >
         <!-- Empty button -->        
     </button>
-    <button x="1" y="1" size="0.5">
+    <button x="1" y="1" width="5" height="2">
         <name>Test button</name>
         <label>Test</label>
         <key>t</key>

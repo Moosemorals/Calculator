@@ -36,96 +36,114 @@ THE SOFTWARE.
             <label>&#x221A;</label>        
         </button>
         <button x="1" y="0">
+            <name>Natural Logarithm</name>
+            <label>ln</label>
+        </button>
+        <button x="2" y="0">
+            <name>Power</name>
+            <label>x^y</label>
+            <key>^</key>
+        </button>
+        <button x="3" y="0">
+            <name>Duplicate</name>
+            <label>dup</label>            
+        </button>
+        <button x="4" y="0">
+            <name>Swap</name>
+            <label>&#x21C5;</label>        
+        </button>
+        
+        <button x="0" y="1">
             <name>Number 7</name>
             <label>7</label>        
             <key>7</key>        
         </button>
-        <button x="2" y="0">
+        <button x="1" y="1">
             <name>Number 8</name>
             <label>8</label>        
             <key>8</key>        
         </button>
-        <button x="3" y="0">
+        <button x="2" y="1">
             <name>Number 9</name>
             <label>9</label>        
             <key>9</key>        
         </button>
-        <button x="4" y="0">
+        <button x="3" y="1">
             <name>Addition (+)</name>
             <label>&#x2795;</label>        
             <key>+</key>        
         </button>
-    
-        <button x="0" y="1">
-            <name>Swap</name>
-            <label>&#x21C5;</label>        
+        <button x="4" y="1">
+            <name>Drop</name>
+            <label>&#x2297;</label>        
         </button>
-        <button x="1" y="1">
+            
+        <button x="0" y="2">
             <name>Number 4</name>
             <label>4</label>        
             <key>4</key>        
         </button>
-        <button x="2" y="1">
+        <button x="1" y="2">
             <name>Number 5</name>
             <label>5</label>        
             <key>5</key>        
         </button>
-        <button x="3" y="1">
+        <button x="2" y="2">
             <name>Number 6</name>
             <label>6</label>        
             <key>6</key>        
         </button>
-        <button x="4" y="1">
+        <button x="3" y="2">
             <name>Subtraction (-)</name>
             <label>&#x2796;</label>        
             <key>-</key>        
         </button>
-    
-        <button x="0" y="2">
-            <name>Drop</name>
-            <label>&#x2297;</label>        
+        <button x="4" y="2">
+            <name>Clear</name>
+            <label>&#x2620;</label>        
         </button>
-        <button x="1" y="2">
+            
+        <button x="0" y="3">
             <name>Number 1</name>
             <label>1</label>        
             <key>1</key>        
         </button>
-        <button x="2" y="2">
+        <button x="1" y="3">
             <name>Number 2</name>
             <label>2</label>        
             <key>2</key>        
-        </button>
-        <button x="3" y="2">
+        </button>       
+        <button x="2" y="3">
             <name>Number 3</name>
             <label>3</label>        
             <key>3</key>        
-        </button>
-        <button x="4" y="2">
+        </button>        
+        <button x="3" y="3">
             <name>Multiplication (*)</name>
             <label>&#x2716;</label>        
             <key>*</key>        
         </button>
-    
-        <button x="0" y="3">
-            <name>Clear</name>
-            <label>&#x2620;</label>        
-        </button>
-        <button x="1" y="3">
-            <name>Decimal point</name>
-            <label>.</label>        
-            <key>.</key>        
-        </button>
-        <button x="2" y="3">
-            <name>Number 0</name>
-            <label>0</label>        
-            <key>0</key>        
-        </button>
-        <button x="3" y="3">
+        <button x="4" y="3" height="2">
             <name>Enter</name>
             <label>&#x23CE;</label>        
             <key>\n</key>        
         </button>
-        <button x="4" y="3">
+                
+        <button x="0" y="4">
+            <name>Decimal point</name>
+            <label>.</label>        
+            <key>.</key>        
+        </button>
+        <button x="1" y="4">
+            <name>Number 0</name>
+            <label>0</label>        
+            <key>0</key>        
+        </button>
+        <button x="2" y="4">
+            <name>Sign change</name>
+            <label>&#x00B1;</label>            
+        </button>                        
+        <button x="3" y="4">
             <name>Division (/)</name>
             <label>&#x2797;</label>        
             <key>/</key>        

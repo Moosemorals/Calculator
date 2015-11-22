@@ -36,16 +36,18 @@ public class Button {
 
     private final int x;
     private final int y;
-    private final double size;
+    private final int width;
+    private final int height;
     private final String name;
     private final String label;
     private final String code;
     private final char key;
 
-    private Button(int x, int y, double size, String name, String label, String code, char key) {
+    private Button(int x, int y, int width, int height, String name, String label, String code, char key) {
         this.x = x;
         this.y = y;
-        this.size = size;
+        this.width = width;
+        this.height = height;
         this.name = name;
         this.label = label;
         this.code = code;
@@ -71,13 +73,21 @@ public class Button {
     }
 
     /**
-     * Relative size, between 0 (invisibly small) and 1. Expected values are
-     * mostly either 1 or 0.5.
+     * Relative width
      *
      * @return
      */
-    public double getSize() {
-        return size;
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Relative height.
+     *
+     * @return
+     */
+    public int getHeight() {
+        return height;
     }
 
     /**
@@ -120,7 +130,8 @@ public class Button {
 
         private int x;
         private int y;
-        private double size = 1;
+        private int width = 1;
+        private int height = 1;
         private String name = "";
         private String label = "";
         private String code = null;
@@ -140,8 +151,13 @@ public class Button {
             return this;
         }
 
-        public Builder setSize(double size) {
-            this.size = size;
+        public Builder setWidth(int width) {
+            this.width = width;
+            return this;
+        }
+
+        public Builder setHeight(int height) {
+            this.height = height;
             return this;
         }
 
@@ -166,7 +182,7 @@ public class Button {
         }
 
         public Button build() {
-            return new Button(x, y, size, name, label, code, key);
+            return new Button(x, y, width, height, name, label, code, key);
         }
     }
 
