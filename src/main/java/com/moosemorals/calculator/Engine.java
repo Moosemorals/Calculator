@@ -45,6 +45,10 @@ public class Engine {
     public static final String PLUS = "\u2795";
     public static final String DIVIDE = "\u2797";
     public static final String MULTIPLY = "\u2716";
+    public static final String SIGN_CHANGE = "\u00B1";
+    public static final String POWER = "x^y";
+    public static final String DUPLICAE = "dup";
+    public static final String LN = "ln";
 
     private static final String DEFAULT_PATTERN = "#,##0.#########";
     private final Logger log = LoggerFactory.getLogger(Engine.class);
@@ -91,10 +95,22 @@ public class Engine {
             case "9":
                 switch (state) {
                     case Decimal:
-                        stack.push(stack.pop() * 10.0 + Double.parseDouble(cmd));
+                        left = stack.pop();
+                        right = Double.parseDouble(cmd);
+                        if (left >= 0) {
+                            stack.push(left * 10.0 + right);
+                        } else {
+                            stack.push(left * 10.0 - right);
+                        }
                         break;
                     case Fraction:
-                        stack.push(stack.pop() + Double.parseDouble(cmd) / (Math.pow(10, fraction)));
+                        left = stack.pop();
+                        right = Double.parseDouble(cmd);
+                        if (left >= 0) {
+                            stack.push(left + right / (Math.pow(10, fraction)));
+                        } else {
+                            stack.push(left - right / (Math.pow(10, fraction)));
+                        }
                         fraction += 1;
                         break;
                     case Display:
@@ -133,6 +149,19 @@ public class Engine {
                 stack.push(left / right);
                 state = State.Display;
                 break;
+            case SIGN_CHANGE:
+                stack.push(0 - stack.pop());
+                break;
+            case POWER:
+                left = stack.pop();
+                right = stack.pop();
+                stack.push(Math.pow(right, left));
+                state = State.Display;
+                break;
+            case LN:
+                left = stack.pop();
+                stack.push(Math.log(left));
+                state = State.Display;
             case ROOT:
                 stack.push(Math.sqrt(stack.pop()));
                 state = State.Display;
@@ -141,6 +170,10 @@ public class Engine {
                 stack.push(0);
                 fraction = 1;
                 state = State.Decimal;
+                break;
+            case DUPLICAE:
+                stack.push(stack.peek());
+                state = state.Display;
                 break;
             case SWAP:
                 left = stack.pop();
