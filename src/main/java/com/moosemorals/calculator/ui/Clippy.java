@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.moosemorals.calculator;
+package com.moosemorals.calculator.ui;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

@@ -23,9 +23,11 @@
  */
 package com.moosemorals.calculator;
 
+import com.moosemorals.calculator.ui.UI;
+import com.moosemorals.calculator.xml.ConfigFileParser;
+import java.io.IOException;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,25 +39,34 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
+    private static Config config;
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            log.error("Can't set look and feel");
+            config = new ConfigFileParser().parse(Main.class.getResourceAsStream("/config.xml"));
+        } catch (XMLStreamException ex) {
+            throw new RuntimeException("Can't read config.xml: " + ex.getMessage(), ex);
         }
 
+        /*
+         try {
+         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+         log.error("Can't set look and feel");
+         }
+         */
         Engine engine = new Engine();
-        final UI ui = new UI(engine);
+        final UI ui = new UI(config, engine);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ui.build();
+                try {
+                    ui.build();
+                } catch (IOException ex) {
+                    throw new RuntimeException("Can't build ui: " + ex.getMessage(), ex);
+                }
             }
 
         });

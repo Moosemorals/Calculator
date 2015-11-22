@@ -21,58 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.moosemorals.calculator;
+package com.moosemorals.calculator.xml;
 
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import javax.swing.JComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.moosemorals.calculator.Config;
+import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class EngineDisplay extends JComponent implements EngineWatcher {
+public class ConfigFileParserNGTest {
 
-    private static final int BORDER = 5;
+    @Test
+    public void test_parser() throws Exception {
 
-    private final Logger log = LoggerFactory.getLogger(EngineDisplay.class);
-    private final Engine engine;
+        Config config = new ConfigFileParser().parse(getClass().getResourceAsStream("/config.xml"));
 
-    public EngineDisplay(Engine engine) {
-        this.engine = engine;
+        assertEquals(config.getCols(), 5);
+        assertEquals(config.getSize(), 48);
+
     }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(240, 18 * 6);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-
-        FontMetrics fm = g.getFontMetrics();
-
-        if (isOpaque()) { //paint background
-            g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
-
-        for (int i = 0; i < engine.getDepth(); i += 1) {
-            String text = engine.getElementAt(i);
-
-            int x = getWidth() - fm.stringWidth(text) - BORDER;
-            int y = getHeight() - (i * fm.getHeight()) - BORDER;
-
-            g.drawString(text, x, y);
-        }
-    }
-
-    @Override
-    public void onEngineChanged() {
-        repaint();
-    }
-
 }

@@ -21,16 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.moosemorals.calculator;
+package com.moosemorals.calculator.ui;
 
+import com.moosemorals.calculator.Config;
+import com.moosemorals.calculator.Engine;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -48,48 +50,36 @@ public class UI implements ActionListener {
 
     private static final String CMD_PREFIX = "BTN";
 
-    private static final String[] LABLES = {
-        Engine.ROOT, "7", "8", "9", Engine.PLUS,
-        Engine.SWAP, "4", "5", "6", Engine.MINUS,
-        Engine.DROP, "1", "2", "3", Engine.MULTIPLY,
-        Engine.CLEAR, ".", "0", Engine.ENTER, Engine.DIVIDE
-    };
-
-    private static final char[] KEYS = {
-        0, '7', '8', '9', '+',
-        0, '4', '5', '6', '-',
-        0, '1', '2', '3', '*',
-        0, '.', '0', '\n', '/'
-    };
-
     private final Logger log = LoggerFactory.getLogger(UI.class);
     private final Engine engine;
     private final Clippy clippy;
+    private final Config config;
 
-    public UI(Engine engine) {
+    public UI(Config config, Engine engine) {
+        this.config = config;
         this.engine = engine;
         clippy = new Clippy();
     }
 
-    public void build() {
+    public void build() throws IOException {
+        log.debug("We've got {} cols and {} buttons", config.getCols(), config.getButtonCount());
         JPanel numbers = new JPanel();
-        numbers.setLayout(new GridLayout(0, 5));
+        numbers.setLayout(new GridLayout(0, config.getCols()));
 
-        Font font = new Font("Monospaced", Font.PLAIN, 16);
-
-        for (int i = 0; i < LABLES.length; i += 1) {
+        //       Font font = new Font("Monospaced", Font.PLAIN, 12);
+        for (int i = 0; i < config.getButtonCount(); i += 1) {
             JButton button = new JButton();
-            button.setText(LABLES[i]);
-            button.setActionCommand(String.format("%s%s", CMD_PREFIX, LABLES[i]));
+            String label = config.getButton(i).getLabel();
+            button.setText(label);
+            button.setActionCommand(String.format("%s%s", CMD_PREFIX, label));
             button.addActionListener(this);
-            button.setFont(font);
-            button.setPreferredSize(new Dimension(48, 48));
+            button.setPreferredSize(new Dimension(config.getSize(), config.getSize()));
             button.setFocusable(false);
             numbers.add(button);
         }
 
-        EngineDisplay display = new EngineDisplay(engine);
-        display.setFont(font);
+        EngineDisplay display = new EngineDisplay(config, engine);
+        //      display.setFont(font);
         engine.addEngineWatcher(display);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -100,9 +90,10 @@ public class UI implements ActionListener {
 
                     char key = e.getKeyChar();
 
-                    for (int i = 0; i < KEYS.length; i += 1) {
-                        if (KEYS[i] == key) {
-                            engine.command(LABLES[i]);
+                    for (int i = 0; i < config.getButtonCount(); i += 1) {
+                        Button b = config.getButton(i);
+                        if (b.getKey() == key) {
+                            engine.command(b.getLabel());
                             return false;
                         }
                     }
