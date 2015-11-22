@@ -88,20 +88,24 @@ public class Engine {
             case "7":
             case "8":
             case "9":
-                if (state == State.Decimal) {
-                    stack.push(stack.pop() * 10.0 + Double.parseDouble(cmd));
-                } else if (state == State.Fraction) {
-                    stack.push(stack.pop() + Double.parseDouble(cmd) / (Math.pow(10, fraction)));
-                    fraction += 1;
-                } else if (state == State.Display) {
-
-                    stack.push(Double.parseDouble(cmd));
-                    fraction = 1;
-                    state = State.Decimal;
+                switch (state) {
+                    case Decimal:
+                        stack.push(stack.pop() * 10.0 + Double.parseDouble(cmd));
+                        break;
+                    case Fraction:
+                        stack.push(stack.pop() + Double.parseDouble(cmd) / (Math.pow(10, fraction)));
+                        fraction += 1;
+                        break;
+                    case Display:
+                        stack.push(Double.parseDouble(cmd));
+                        fraction = 1;
+                        state = State.Decimal;
+                        break;
                 }
                 break;
             case ".":
                 if (state == State.Display) {
+                    stack.push(0);
                     fraction = 1;
                 }
                 state = State.Fraction;
@@ -134,6 +138,7 @@ public class Engine {
                 break;
             case ENTER:
                 stack.push(0);
+                fraction = 1;
                 state = State.Decimal;
                 break;
             case SWAP:
