@@ -10,7 +10,7 @@ can define the actions of keys in a config file.
 
 Basic calculator works.
 
-Configurable buttons work. See [src/main/resources/config.xml](config.xml)
+Configurable buttons work. See [config.xml](src/main/resources/config.xml)
 for a longer example, but buttons can be defined something like:
 
     <button x="2" y="4">
