@@ -32,5 +32,11 @@ I've got the rough shape of a solution in my head (based on a [virtual stack
 computer](http://users.ece.cmu.edu/~koopman/stack_computers/sec3_2.html) and 
 programming in Forth) but there are still bits I'm working out.
 
+I don't know when to compile the code (each time the button is pressed, when
+the program starts, or once and cache the compiled version somewhere), how to 
+store the code (which depends on the answer to the previous question), and what
+to do about libraries and dependency (for example, once I've written a factorial 
+function, I want to be able to access it from other functions).
+
 Ah, well. It's a hobby, I guess.
 
