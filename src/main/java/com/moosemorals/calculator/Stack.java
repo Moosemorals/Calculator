@@ -30,14 +30,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public final class Stack {
+public class Stack {
 
     public final static int INITIAL_SIZE = 4;
     private final Logger log = LoggerFactory.getLogger(Stack.class);
 
-    private final Object lock;
-    private double[] backingArray;
-    private int depth;
+    protected final Object lock;
+    protected double[] backingArray;
+    protected int depth;
 
     public Stack() {
         lock = new Object();

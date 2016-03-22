@@ -26,6 +26,7 @@ package com.moosemorals.calculator;
 import com.moosemorals.calculator.ui.UI;
 import com.moosemorals.calculator.xml.ConfigFileParser;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
@@ -38,10 +39,18 @@ import org.slf4j.LoggerFactory;
  */
 public class Main {
 
+    public static final String KEY_FRAME_WIDTH = "frame_width";
+    public static final String KEY_FRAME_LEFT = "frame_left";
+    public static final String KEY_FRAME_TOP = "frame_top";
+    public static final String KEY_FRAME_KNOWN = "frame_bounds";
+    public static final String KEY_FRAME_HEIGHT = "frame_height";
+
     private static final Logger log = LoggerFactory.getLogger(Main.class);
     private static Config config;
 
     public static void main(String[] args) throws IOException {
+
+        Preferences prefs = Preferences.userNodeForPackage(Main.class);
 
         try {
             config = new ConfigFileParser().parse(Main.class.getResourceAsStream("/config.xml"));
@@ -57,7 +66,7 @@ public class Main {
          }
          */
         Engine engine = new Engine();
-        final UI ui = new UI(config, engine);
+        final UI ui = new UI(prefs, config, engine);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override

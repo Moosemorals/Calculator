@@ -25,16 +25,21 @@ package com.moosemorals.calculator.ui;
 
 import com.moosemorals.calculator.Config;
 import com.moosemorals.calculator.Engine;
+import com.moosemorals.calculator.Main;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -56,8 +61,10 @@ public class UI implements ActionListener {
     private final Engine engine;
     private final Clippy clippy;
     private final Config config;
+    private final Preferences prefs;
 
-    public UI(Config config, Engine engine) {
+    public UI(Preferences prefs, Config config, Engine engine) {
+        this.prefs = prefs;
         this.config = config;
         this.engine = engine;
         clippy = new Clippy();
@@ -134,16 +141,41 @@ public class UI implements ActionListener {
             }
         });
 
-        JFrame main = new JFrame("Calculator");
+        JFrame window = new JFrame("Calculator");
 
-        //    main.setSize(480, 900);
-        main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        main.getContentPane().setLayout(new BoxLayout(main.getContentPane(), BoxLayout.Y_AXIS));
-        main.add(display);
-        main.add(numbers);
-        main.pack();
-        main.setResizable(false);
-        main.setVisible(true);
+        window.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                saveBounds(e.getComponent().getBounds());
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                saveBounds(e.getComponent().getBounds());
+            }
+
+            private void saveBounds(Rectangle bounds) {
+                prefs.putInt(Main.KEY_FRAME_TOP, bounds.y);
+                prefs.putInt(Main.KEY_FRAME_LEFT, bounds.x);
+                prefs.putInt(Main.KEY_FRAME_WIDTH, bounds.width);
+                prefs.putInt(Main.KEY_FRAME_HEIGHT, bounds.height);
+            }
+        });
+
+        window.setBounds(new Rectangle(
+                prefs.getInt(Main.KEY_FRAME_LEFT, 0),
+                prefs.getInt(Main.KEY_FRAME_TOP, 0),
+                prefs.getInt(Main.KEY_FRAME_WIDTH, 640),
+                prefs.getInt(Main.KEY_FRAME_HEIGHT, 480)
+        ));
+
+        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        window.getContentPane().setLayout(new BoxLayout(window.getContentPane(), BoxLayout.Y_AXIS));
+        window.add(display);
+        window.add(numbers);
+        window.pack();
+        window.setResizable(false);
+        window.setVisible(true);
     }
 
     @Override
