@@ -23,44 +23,49 @@
  */
 package com.moosemorals.calculator;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.HashSet;
-import java.util.Set;
+import com.moosemorals.calculator.Commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
 /**
- *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
 public class Engine {
 
-    public static final String ENTER = "⏎";
-    public static final String DROP = "⊗";
-    public static final String ROOT = "√";
-    public static final String SWAP = "⇅";
-    public static final String CLEAR = "☠";
-    public static final String MINUS = "\u2796";
-    public static final String PLUS = "\u2795";
-    public static final String DIVIDE = "\u2797";
-    public static final String MULTIPLY = "\u2716";
-    public static final String SIGN_CHANGE = "\u00B1";
-    public static final String POWER = "x^y";
-    public static final String DUPLICAE = "dup";
-    public static final String LN = "ln";
+    private static final String ENTER = "⏎";
+    private static final String DROP = "⊗";
+    private static final String ROOT = "√";
+    private static final String SWAP = "⇅";
+    private static final String CLEAR = "☠";
+    private static final String MINUS = "\u2796";
+    private static final String PLUS = "\u2795";
+    private static final String DIVIDE = "\u2797";
+    private static final String MULTIPLY = "\u2716";
+    private static final String SIGN_CHANGE = "\u00B1";
+    private static final String POWER = "x^y";
+    private static final String DUPLICAE = "dup";
+    private static final String LN = "ln";
 
     private static final String DEFAULT_PATTERN = "#,##0.#########";
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<EngineWatcher> engineWatchers;
     private final DecimalFormat df;
+    private final CommandStack commandStack;
+    private final LinkedList<String> display;
     private int fraction = 1;
-    private State state = State.Decimal;
 
-    public Engine() {
+    Engine() {
+        display = new LinkedList<>();
+        commandStack = new CommandStack();
         stack = new Stack();
-        stack.push(0);
+        stack.push(0.0);
         engineWatchers = new HashSet<>();
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setNaN("Err");
@@ -75,12 +80,28 @@ public class Engine {
         return stack.peek(d);
     }
 
-    public void push(double value) {
-        stack.push(value);
+    public void push(final double value) {
+        commandStack.addCommand(new Command() {
+            @Override
+            public void execute() {
+                stack.push(value);
+            }
+
+            @Override
+            public void undo() {
+                stack.pop();
+            }
+        });
+
         notifyListeners();
     }
 
-    public void command(String cmd) {
+    public void undo() {
+        commandStack.undo();
+        notifyListeners();
+    }
+
+    public void command(final String cmd) {
         double left, right;
         switch (cmd) {
             case "0":
@@ -93,104 +114,82 @@ public class Engine {
             case "7":
             case "8":
             case "9":
-                switch (state) {
-                    case Decimal:
-                        left = stack.pop();
-                        right = Double.parseDouble(cmd);
-                        if (left >= 0) {
-                            stack.push(left * 10.0 + right);
-                        } else {
-                            stack.push(left * 10.0 - right);
-                        }
-                        break;
-                    case Fraction:
-                        left = stack.pop();
-                        right = Double.parseDouble(cmd);
-                        if (left >= 0) {
-                            stack.push(left + right / (Math.pow(10, fraction)));
-                        } else {
-                            stack.push(left - right / (Math.pow(10, fraction)));
-                        }
-                        fraction += 1;
-                        break;
-                    case Display:
-                        stack.push(Double.parseDouble(cmd));
-                        fraction = 1;
-                        state = State.Decimal;
-                        break;
-                }
-                break;
             case ".":
-                if (state == State.Display) {
-                    stack.push(0);
-                    fraction = 1;
-                }
-                state = State.Fraction;
+                commandStack.addCommand(new Command() {
+                    @Override
+                    public void execute() {
+                        display.push(cmd);
+                    }
 
+                    @Override
+                    public void undo() {
+                        display.pop();
+                    }
+                });
                 break;
             case PLUS:
-                stack.push(stack.pop() + stack.pop());
-                state = State.Display;
+                commandStack.addCommand(new AddCommand(stack));
                 break;
             case MINUS:
-                right = stack.pop();
-                left = stack.pop();
-                stack.push(left - right);
-
-                state = State.Display;
+                commandStack.addCommand(new SubtractCommand(stack));
                 break;
             case MULTIPLY:
-                stack.push(stack.pop() * stack.pop());
-                state = State.Display;
+                commandStack.addCommand(new MultiplyCommand(stack));
+
                 break;
             case DIVIDE:
-                right = stack.pop();
-                left = stack.pop();
-                stack.push(left / right);
-                state = State.Display;
+                commandStack.addCommand(new DivideCommand(stack));
+
                 break;
             case SIGN_CHANGE:
-                stack.push(0 - stack.pop());
+                commandStack.addCommand(new SignChangeCommand(stack));
                 break;
             case POWER:
-                left = stack.pop();
-                right = stack.pop();
-                stack.push(Math.pow(right, left));
-                state = State.Display;
+                commandStack.addCommand(new PowerCommand(stack));
+
                 break;
             case LN:
-                left = stack.pop();
-                stack.push(Math.log(left));
-                state = State.Display;
+                commandStack.addCommand(new LnCommand(stack));
+
             case ROOT:
-                stack.push(Math.sqrt(stack.pop()));
-                state = State.Display;
+                commandStack.addCommand(new RootCommand(stack));
+
                 break;
             case ENTER:
-                stack.push(0);
-                fraction = 1;
-                state = State.Decimal;
+                commandStack.addCommand(new Command() {
+                    @Override
+                    public void execute() {
+                        StringBuilder scratch = new StringBuilder();
+
+                        display.forEach(scratch::append);
+                        stack.push(Double.parseDouble(scratch.toString()));
+                    }
+
+                    @Override
+                    public void undo() {
+                        stack.pop();
+                    }
+                });
+
                 break;
             case DUPLICAE:
-                stack.push(stack.peek());
-                state = state.Display;
+                commandStack.addCommand(new DuplicateCommand(stack));
+
                 break;
             case SWAP:
-                left = stack.pop();
-                right = stack.pop();
-                stack.push(left);
-                stack.push(right);
-                state = State.Display;
+                commandStack.addCommand(new SwapCommand(stack));
+
                 break;
             case DROP:
-                stack.pop();
-                state = State.Display;
+                commandStack.addCommand(new DropCommand(stack));
+
                 break;
             case CLEAR:
+                commandStack.clear();
                 while (stack.getDepth() > 0) {
                     stack.pop();
                 }
-                state = State.Display;
+
                 break;
             default:
                 log.warn("Don't know about that");
@@ -204,17 +203,7 @@ public class Engine {
     }
 
     public String getElementAt(int index) {
-        if (index == 0 && state == State.Fraction) {
-            StringBuilder pattern = new StringBuilder();
-            pattern.append("#,##0.");
-            for (int i = 1; i < fraction; i += 1) {
-                pattern.append("0");
-            }
-            pattern.append("######");
-            df.applyPattern(pattern.toString());
-        } else {
-            df.applyPattern(DEFAULT_PATTERN);
-        }
+
         return df.format(stack.peek(index));
     }
 
@@ -238,8 +227,4 @@ public class Engine {
         }
     }
 
-    private enum State {
-
-        Decimal, Fraction, Display;
-    }
 }

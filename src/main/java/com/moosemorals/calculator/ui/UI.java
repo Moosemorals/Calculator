@@ -134,7 +134,7 @@ public class UI implements ActionListener {
                             }
                         }
                     } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                        log.debug("Trying to delete, eh?");
+                        engine.undo();
                     }
                 }
                 return false;

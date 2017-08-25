@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Osric Wilkinson <osric@fluffypeople.com>.
+ * Copyright 2017 Osric Wilkinson <osric@fluffypeople.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,53 +23,17 @@
  */
 package com.moosemorals.calculator;
 
-import static org.testng.Assert.assertEquals;
-import org.testng.annotations.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class EngineNGTest {
+public interface Command {
 
-    private static final double FUDGE = 0.0001;
+    public void execute();
 
-    @Test
-    public void test_click1() {
-        Engine e = new Engine();
-        e.command("1");
-        assertEquals(e.peek(), 1.0, FUDGE);
-    }
-
-    @Test
-    public void test_click2() {
-        Engine e = new Engine();
-        e.command("1");
-        e.command(".");
-        e.command("2");
-        assertEquals(e.peek(), 1.2, FUDGE);
-        assertEquals(e.getDepth(), 1);
-    }
-
-    @Test
-    public void test_click3() {
-        Engine e = new Engine();
-        e.command("1");
-        e.command(Engine.ENTER);
-        e.command("2");
-        assertEquals(e.peek(), 2, FUDGE);
-        assertEquals(e.getDepth(), 2);
-    }
-
-    @Test
-    public void test_click4() {
-        Engine e = new Engine();
-        e.command("1");
-        e.command(Engine.ENTER);
-        e.command("2");
-        e.command(Engine.PLUS);
-        assertEquals(e.peek(), 3, FUDGE);
-        assertEquals(e.getDepth(), 1);
-    }
+    public void undo();
 
 }
