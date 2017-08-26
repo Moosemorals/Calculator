@@ -27,6 +27,7 @@ import com.moosemorals.calculator.Config;
 import com.moosemorals.calculator.Engine;
 import com.moosemorals.calculator.Main;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -82,7 +83,7 @@ public class UI implements ActionListener {
         JPanel numbers = new JPanel();
         numbers.setLayout(new GridBagLayout());
 
-        //       Font font = new Font("Monospaced", Font.PLAIN, 12);
+        Font buttonFont = new Font("Monospaced", Font.BOLD, 16);
         for (int i = 0; i < config.getButtonCount(); i += 1) {
             Button button = config.getButton(i);
             JButton b = new JButton();
@@ -95,6 +96,7 @@ public class UI implements ActionListener {
             c.gridwidth = button.getWidth();
 
             b.setText(button.getLabel());
+            b.setFont(buttonFont);
             b.setMargin(new Insets(0, 0, 0, 0));
             b.setActionCommand(String.format("%s%s", CMD_PREFIX, button.getLabel()));
             b.addActionListener(this);
@@ -103,49 +105,45 @@ public class UI implements ActionListener {
             numbers.add(b, c);
         }
 
-        EngineDisplay display = new EngineDisplay(config, engine);        
+        EngineDisplay display = new EngineDisplay(config, engine);
         engine.addEngineWatcher(display);
 
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-
-            @Override
-            public boolean dispatchKeyEvent(KeyEvent e) {
-                if (e.getID() == KeyEvent.KEY_TYPED) {
-
-                    char key = e.getKeyChar();
-
-                    for (int i = 0; i < config.getButtonCount(); i += 1) {
-                        Button b = config.getButton(i);
-                        if (b.getKey() == key) {
-                            engine.command(b.getLabel());
-                            return false;
-                        }
-                    }
-
-                    if (key == 'x' || key == 'X' || key == 'q' || key == 'Q') {
-                        System.exit(0);
-                    }
-                } else if (e.getID() == KeyEvent.KEY_PRESSED) {
-
-                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
-                        String text = df.format(engine.getElementAt(0));
-                        clippy.sendToClipboard(text);
-                    } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
-                        String text = clippy.getFromClipboard();
-                        if (text != null) {
-                            try {
-                                double value = Double.parseDouble(text);
-                                engine.push(value);
-                            } catch (NumberFormatException ex) {
-                                // ignored, but no point trying to add the number
-                            }
-                        }
-                    } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                        engine.undo();
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher((KeyEvent e) -> {
+            if (e.getID() == KeyEvent.KEY_TYPED) {
+                
+                char key = e.getKeyChar();
+                
+                for (int i = 0; i < config.getButtonCount(); i += 1) {
+                    Button b = config.getButton(i);
+                    if (b.getKey() == key) {
+                        engine.command(b.getLabel());
+                        return false;
                     }
                 }
-                return false;
+                
+                if (key == 'x' || key == 'X' || key == 'q' || key == 'Q') {
+                    System.exit(0);
+                }
+            } else if (e.getID() == KeyEvent.KEY_PRESSED) {
+                
+                if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
+                    String text = df.format(engine.getElementAt(0));
+                    clippy.sendToClipboard(text);
+                } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
+                    String text = clippy.getFromClipboard();
+                    if (text != null) {
+                        try {
+                            double value = Double.parseDouble(text);
+                            engine.push(value);
+                        } catch (NumberFormatException ex) {
+                            // ignored, but no point trying to add the number
+                        }
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    engine.undo();
+                }
             }
+            return false;
         });
 
         JFrame window = new JFrame("Calculator");

@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import javax.script.ScriptEngine;
@@ -46,35 +45,62 @@ public class Engine {
 
     private static final String ENTER = "⏎";
     private static final String CLEAR = "☠";
-    
+
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<EngineWatcher> engineWatchers;
-    
+
     private final CommandStack commandStack;
-    private final LinkedList<String> display;
+    private final Display display;
     private final Config config;
     private final ScriptEngine scriptEngine;
     private final Map<String, ScriptObjectMirror> scriptCache;
+
+    private final Command enterCommand = new Command() {
+        double left;
+
+        @Override
+        public void execute() {
+            stack.push(display.getValue());
+            display.reset();
+        }
+
+        @Override
+        public void undo() {
+            display.setValue(stack.pop());
+        }
+    };
 
     Engine(Config config) {
         this.config = config;
 
         scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
         scriptCache = new HashMap<>();
-        display = new LinkedList<>();
+        display = new Display();
         commandStack = new CommandStack();
         stack = new Stack();
-        stack.push(0.0);
+
         engineWatchers = new HashSet<>();
     }
 
     public double peek() {
-        return stack.peek();
+        if (display.hasValue()) {
+            return display.getValue();
+        } else {
+            return stack.peek();
+        }
     }
 
     public double peek(int d) {
-        return stack.peek(d);
+        if (display.hasValue()) {
+            if (d == 0) {
+                return display.getValue();
+            } else {
+                return stack.peek(d - 1);
+            }
+        } else {
+           return stack.peek(d);
+        }
     }
 
     public void push(final double value) {
@@ -98,26 +124,8 @@ public class Engine {
         notifyListeners();
     }
 
-    public void command(final String cmd) {        
-        for (int i = 0; i < config.getButtonCount(); i += 1) {
-            Button b = config.getButton(i);
-
-            if (cmd.equals(b.getLabel())) {
-                String code = b.getCode();
-                if (code != null) {
-                    try {
-                        JSObject func = (JSObject) scriptEngine.eval(b.getCode());
-
-                        commandStack.addCommand(new JsCommand((ScriptObjectMirror) func.call(null, stack)));
-                        notifyListeners();
-                        return;
-                    } catch (ScriptException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            }
-        }
-
+    public void command(final String cmd) {
+        boolean handled = false;
         switch (cmd) {
             case "0":
             case "1":
@@ -132,48 +140,67 @@ public class Engine {
             case ".":
                 commandStack.addCommand(new Command() {
                     double left;
+
                     @Override
                     public void execute() {
-                        display.addLast(cmd);
-                        left = stack.pop();
-                        stack.push(getDisplayValue());
+                        display.push(cmd);
                     }
 
                     @Override
                     public void undo() {
-                        display.removeLast();
-                        stack.pop();
-                        stack.push(left);
+                        display.pop();
                     }
                 });
+                handled = true;
                 break;
 
-            case ENTER:
-                commandStack.addCommand(new Command() {
-                    double left;
-                    @Override
-                    public void execute() {                                                
-                        stack.push(getDisplayValue());
-                        display.clear();
-                    }
-
-                    @Override
-                    public void undo() {
-                        stack.pop();
-                    }
-                });
-
-                break;
             case CLEAR:
                 commandStack.clear();
-                display.clear();
+                display.reset();
                 stack.reset();
+                handled = true;
                 break;
             default:
-                log.warn("Don't know about that");
+                if (display.hasValue()) {
+                    commandStack.addCommand(enterCommand);
+                }
                 break;
         }
+
+        if (handled) {
+            notifyListeners();
+            return;
+        }
+
+        log.debug("Stack before {}", stack.toString());
+        for (int i = 0; i < config.getButtonCount(); i += 1) {
+            Button b = config.getButton(i);
+
+            if (cmd.equals(b.getLabel())) {
+                String code = b.getCode();
+                if (code != null) {
+                    log.debug("Running {}", b.getName());
+                    try {
+                        JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+                        commandStack.addCommand(new JsCommand((ScriptObjectMirror) func.call(null, stack)));
+                        break;
+                    } catch (ScriptException ex) {
+                        stack.push(Double.NaN);
+                    }
+                }
+            }
+        }
+        log.debug("Stack after {}", stack.toString());
+
         notifyListeners();
+    }
+
+    public boolean hasDisplayValue() {
+        return display.hasValue();
+    }
+
+    public double getDisplayValue() {
+        return display.getValue();
     }
 
     public int getDepth() {
@@ -181,7 +208,6 @@ public class Engine {
     }
 
     public double getElementAt(int index) {
-
         return stack.peek(index);
     }
 
@@ -191,12 +217,6 @@ public class Engine {
                 watcher.onEngineChanged();
             }
         }
-    }
-
-    private double getDisplayValue() {
-        StringBuilder scratch = new StringBuilder();        
-        display.forEach(scratch::append);
-        return Double.parseDouble(scratch.toString());
     }
 
     public void addEngineWatcher(EngineWatcher watcher) {

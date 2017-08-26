@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Osric Wilkinson <osric@fluffypeople.com>.
+ * Copyright 2017 Osric Wilkinson (osric@fluffypeople.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,76 @@
  */
 package com.moosemorals.calculator;
 
+import java.text.DecimalFormat;
+import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Osric Wilkinson <osric@fluffypeople.com>
+ * @author Osric Wilkinson (osric@fluffypeople.com)
  */
-public class Display {
+public final class Display {
 
+    private final static String DISPLAY_FORMAT = "#############0.################";
     private final Logger log = LoggerFactory.getLogger(Display.class);
+    private final LinkedList<String> display;
+    
+    private final DecimalFormat df;
+
+    public Display() {
+        df = new DecimalFormat(DISPLAY_FORMAT);
+        display = new LinkedList<>();
+        reset();
+    }
+
+    public void push(String n) {
+        if (n == null) {
+            throw new IllegalArgumentException("Can't push nulls into display");
+        } else if (!n.matches("^[0-9\\.]$")) {
+            throw new IllegalArgumentException("Can only push one of [0-9\\.] onto display");
+        }
+
+        display.addLast(n);
+    }
+
+    public String pop() {
+        return display.removeLast();
+    }
+
+    public void reset() {
+        display.clear();
+    }
+
+    public double getValue() {
+        return Double.parseDouble(toString());
+    }
+
+    public boolean hasValue() {
+        return !display.isEmpty();
+    }
+    
+    public void setValue(double value) {
+        String val = df.format(value);
+        if (val.substring(val.length() - 1).equals(".")) {
+            val = val.substring(0, val.length() - 1);
+        }
+        log.debug("Val [{}]", val);
+        display.clear();
+        for (int i = 0; i < val.length(); i += 1) {            
+            display.addLast(val.substring(i, i + 1));            
+        }
+        
+    }
+
+    @Override
+    public String toString() {
+        if (display.isEmpty()) {
+            return "0";
+        }
+        StringBuilder scratch = new StringBuilder();
+        display.forEach(scratch::append);
+        return scratch.toString();
+    }
 
 }

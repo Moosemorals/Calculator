@@ -52,16 +52,23 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
     public EngineDisplay(Config config, Engine engine) {
         this.engine = engine;
         this.config = config;
-        
+
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setNaN("Err");
         df = new DecimalFormat(DISPLAY_PATTERN, symbols);
-        
+
     }
 
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(config.getCols() * config.getSize(), 18 * 6);
+    }
+
+    private void displayLine(Graphics g, FontMetrics fm, int index, String text) {
+        int x = getWidth() - fm.stringWidth(text) - BORDER;
+        int y = getHeight() - (index * fm.getHeight()) - BORDER;
+
+        g.drawString(text, x, y);
     }
 
     @Override
@@ -74,13 +81,15 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
 
+        boolean hasDisplayLine = engine.hasDisplayValue();
+        
+        if (hasDisplayLine) {
+            displayLine(g, fm, 0, df.format(engine.getDisplayValue()));
+        }
+        
         for (int i = 0; i < engine.getDepth(); i += 1) {
             String text = df.format(engine.getElementAt(i));
-
-            int x = getWidth() - fm.stringWidth(text) - BORDER;
-            int y = getHeight() - (i * fm.getHeight()) - BORDER;
-
-            g.drawString(text, x, y);
+            displayLine(g, fm, (hasDisplayLine ? i + 1 : i), text);
         }
     }
 

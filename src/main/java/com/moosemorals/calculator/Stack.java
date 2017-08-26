@@ -24,6 +24,7 @@
 package com.moosemorals.calculator;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,77 +37,65 @@ public final class Stack {
     public final static int INITIAL_SIZE = 4;
     private final Logger log = LoggerFactory.getLogger(Stack.class);
 
-    protected final Object lock;
-    protected double[] backingArray;
-    protected int depth;
-
+    private final Object lock;
+    private final LinkedList<Double> stack;
+  
     public Stack() {
         lock = new Object();
+        stack = new LinkedList<>();        
         reset();
     }
 
     public void reset() {
         synchronized (lock) {
-            backingArray = new double[INITIAL_SIZE];
-            for (int i = 0; i < INITIAL_SIZE; i += 1) {
-                backingArray[i] = Double.NaN;
-            }
-            depth = 0;
+            stack.clear();
         }
     }
 
     public double pop() {
         synchronized (lock) {
-            if (depth >= 1) {
-                return backingArray[--depth];
-            } else {
+            if (stack.isEmpty()) {
                 return Double.NaN;
+            } else {
+                return stack.pop();
             }
         }
     }
 
     public void push(double value) {
         synchronized (lock) {
-            if (depth == backingArray.length - 1) {
-                double[] temp = new double[backingArray.length * 2];
-                for (int i = 0; i < temp.length; i += 1) {
-                    temp[i] = Double.NaN;
-                }
-                System.arraycopy(backingArray, 0, temp, 0, backingArray.length);
-                backingArray = temp;
-            }
-            backingArray[depth++] = value;
+            stack.push(value);
         }
     }
 
     public double peek() {
         synchronized (lock) {
-            return backingArray[depth - 1];
+            return stack.peek();
         }
     }
 
-    public double peek(int d) {
-        if (d < 0) {
-            throw new IndexOutOfBoundsException("Trying to peak at negative stack.");
-        }
-        if (d >= depth) {
-            throw new IndexOutOfBoundsException("Trying to peak past end of stack: Wanted " + d + ", can have: " + depth);
-        }
+    public double peek(int d) {        
         synchronized (lock) {
-            return backingArray[(depth - 1) - d];
+            return stack.get(d);
         }
     }
 
     public int getDepth() {
-        return depth;
+        return stack.size();
     }
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append(Arrays.toString(backingArray))
-                .toString();
-
+        StringBuilder result = new StringBuilder();
+        result.append("[");
+        for (int i = 0; i < stack.size(); i += 1) {
+            if (i != 0) {
+                result.append(", ");
+            }
+            result.append(stack.get(i));
+        }
+        result.append("]");
+        return result.toString();
     }
 
 }
