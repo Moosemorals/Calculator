@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Calculator
+Comment=A simple desktop calculator
+Exec=java -jar /home/osric/Projects/Calculator/target/Calculator-current.jar
+Icon=accessories-calculator
+Terminal=false
+
+Path=
+StartupNotify=false
