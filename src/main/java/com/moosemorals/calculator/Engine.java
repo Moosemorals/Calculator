@@ -178,11 +178,13 @@ public class Engine {
 
             if (cmd.equals(b.getLabel())) {
                 String code = b.getCode();
-                if (code != null) {
-                    log.debug("Running {}", b.getName());
+                if (code != null) {                    
                     try {
-                        JSObject func = (JSObject) scriptEngine.eval(b.getCode());
-                        commandStack.addCommand(new JsCommand((ScriptObjectMirror) func.call(null, stack)));
+                        if (!scriptCache.containsKey(cmd)) {
+                            JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+                            scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
+                        }
+                        commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
                         break;
                     } catch (ScriptException ex) {
                         stack.push(Double.NaN);
