@@ -34,7 +34,7 @@ THE SOFTWARE.
         <button x="0" y="0">
             <name>Square root</name>
             <label>&#x221A;</label>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left;
                     return {
@@ -48,12 +48,12 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="1" y="0">
             <name>Natural Logarithm</name>
             <label>ln</label>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left;
                     return {
@@ -67,13 +67,13 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="2" y="0">
             <name>Power</name>
             <label>x^y</label>
             <key>^</key>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left, right;
                     return {
@@ -89,12 +89,12 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="3" y="0">
             <name>Duplicate</name>
             <label>dup</label>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left;
                     return {
@@ -107,12 +107,12 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="4" y="0">
             <name>Swap</name>
             <label>&#x21C5;</label>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left, right;
                     return {
@@ -130,7 +130,7 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="0" y="1">
             <name>Number 7</name>
@@ -151,7 +151,7 @@ THE SOFTWARE.
             <name>Addition (+)</name>
             <label>&#x2795;</label>
             <key>+</key>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left, right;
                     return {
@@ -167,12 +167,12 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="4" y="1">
             <name>Drop</name>
             <label>&#x2297;</label>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left;
                     return {
@@ -184,7 +184,7 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
 
         <button x="0" y="2">
@@ -206,14 +206,14 @@ THE SOFTWARE.
             <name>Subtraction (-)</name>
             <label>&#x2796;</label>
             <key>-</key>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left, right;
                     return {
                         execute: function () {
                             left = stack.pop();
                             right = stack.pop();
-                            stack.push(right - left);
+                            stack.push(left - right);
                         },
                         undo: function () {
                             stack.pop();
@@ -222,7 +222,7 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="4" y="2">
             <name>Clear</name>
@@ -248,7 +248,7 @@ THE SOFTWARE.
             <name>Multiplication (*)</name>
             <label>&#x2716;</label>
             <key>*</key>
-            <script><![CDATA[
+            <script>
                 function (stack) {
                     var left, right;
                     return {
@@ -264,7 +264,7 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="4" y="3" height="2">
             <name>Enter</name>
@@ -285,7 +285,7 @@ THE SOFTWARE.
         <button x="2" y="4">
             <name>Sign change</name>
             <label>&#x00B1;</label>
-           <script><![CDATA[
+           <script>
                 function (stack) {
                     var left;
                     return {
@@ -299,20 +299,20 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>
+            </script>
         </button>
         <button x="3" y="4">
             <name>Division (/)</name>
             <label>&#x2797;</label>
             <key>/</key>
-           <script><![CDATA[
+           <script>
                 function (stack) {
                     var left, right;
                     return {
                         execute: function () {
                             left = stack.pop();
                             right = stack.pop();
-                            stack.push(right / left);
+                            stack.push(left / right);
                         },
                         undo: function () {
                             stack.pop();
@@ -321,7 +321,7 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>            
+            </script>            
         </button>
     </buttons>
 </calculator>

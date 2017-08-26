@@ -11,45 +11,56 @@ A basic Java RPN desktop calculator.
 
     java -jar target/Calculator-current.jar
 
-# Plan
+# Features
 
-I want to be able to easily customise the calculator, without needing to recompile.
-To this end, I want to write a fairly simple programming language, so that I
-can define the actions of keys in a config file.
+  * RPN. I find it easier to think in RPN than infix, especially for
+    complex calculations
 
-# Progress
+  * Programmable. I don't mean that you can write macros for the 
+    calculator, I mean that the buttons run JavaScript code
+    against the stack.
 
-Basic calculator works.
 
-Configurable buttons work. See [config.xml][config]
-for a longer example, but buttons can be defined something like:
+# Buttons
 
-    <button x="2" y="4">
-        <name>Sign change</name>
-        <label>±</label>
-        <key>s</key>
+Buttons run user defined JavaScript running on Java's Nashorn engine.
+
+This means that buttons can (if you really want) perform actions well
+outside the scope of basic maths. Be careful using buttons from other
+people, they can download and install evil code. 
+
+See the [example config][config] for an extended example, but buttons
+are defined like:
+
+    <button>
+        <name>Add</name>
+        <label>+</label>
+        <key>+</key>
+        <script>
+            function (stack) {
+                var left, right;
+                return {
+                    execute : function () {
+                        left = stack.pop();
+                        right = stack.pop();
+                        stack.push(left + right);                    
+                    },
+                    undo : function () {
+                        stack.pop();
+                        stack.push(right);
+                        stack.push(left);
+                    },
+                };
+            }
+        </script>
     </button>
 
-and the button will be drawn at `(2, 4)`, the "s" key will trigger the action,
-the label will show "±".
+Buttons should be a function that takes a single parameter (the current stack)
+and returns a "Command" object that will be used to manipulate the stack. 
 
-The next step is to add `<code>` tags to the definition, so that
+Using the "Command Pattern" means that the calculator has an undo stack that
+can take you through calculations. (At some point, I'll add 'redo' in as well,
+it won't be a big change).
 
-    <code>0 -</code>
-
-works.
-
-I've got the rough shape of a solution in my head (based on a [virtual stack
-computer][vsc] and
-programming in Forth) but there are still bits I'm working out.
-
-I don't know when to compile the code (each time the button is pressed, when
-the program starts, or once and cache the compiled version somewhere), how to
-store the code (which depends on the answer to the previous question), and what
-to do about libraries and dependency (for example, once I've written a factorial
-function, I want to be able to access it from other functions).
-
-Ah, well. It's a hobby, I guess.
 
 [config]: src/main/resources/config.xml
-[vsc]: http://users.ece.cmu.edu/~koopman/stack_computers/sec3_2.html

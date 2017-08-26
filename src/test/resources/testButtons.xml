@@ -32,7 +32,7 @@ THE SOFTWARE.
         <name>Test button</name>
         <label>Test</label>
         <key>t</key>
-        <code>NOOP</code>
+        <script>NOOP</script>
     </button>
     <button x="2" y="2">
         <name>Unicode button</name>

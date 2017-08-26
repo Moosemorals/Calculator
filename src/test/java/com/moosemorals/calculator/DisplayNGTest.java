@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Osric Wilkinson <osric@fluffypeople.com>.
+ * Copyright 2017 Osric Wilkinson (osric@fluffypeople.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,53 @@
  */
 package com.moosemorals.calculator;
 
-import com.moosemorals.calculator.xml.ConfigFileParser;
-import static org.testng.Assert.assertEquals;
-import org.testng.annotations.BeforeClass;
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 /**
  *
- * @author Osric Wilkinson <osric@fluffypeople.com>
+ * @author Osric Wilkinson (osric@fluffypeople.com)
  */
-public class EngineNGTest {
-
-    private static final double FUDGE = 0.0001;
-
-    private Config config;
-    
-    @BeforeClass
-    public void setup() throws Exception {        
-        config = new ConfigFileParser().parse(getClass().getResourceAsStream("/config.xml"));
+public class DisplayNGTest {
+        
+    @Test
+    public void test_setValue1() {
+        Display d = new Display();
+        d.setValue(1);
+        
+        assertEquals(d.getValue(), 1.0);
     }
     
     @Test
-    public void test_click1() {
-        Engine e = new Engine(config);
-        e.command("1");
-        assertEquals(e.peek(), 1.0, FUDGE);
+    public void test_setValue2() {
+        Display d = new Display();
+        d.setValue(-1);
+        
+        assertEquals(d.getValue(), -1.0);
     }
-
+    
     @Test
-    public void test_click2() {
-        Engine e = new Engine(config);
-        e.command("1");
-        e.command(".");
-        e.command("2");
-        assertEquals(e.peek(), 1.2, FUDGE);
-        assertEquals(e.getDepth(), 0);
+    public void test_setValue3() {
+        Display d = new Display();
+        d.setValue(10);
+        
+        assertEquals(d.getValue(), 10.0);
     }
-
-
+    
+    @Test
+    public void test_setValue4() {
+        Display d = new Display();
+        d.setValue(0.4);
+        
+        assertEquals(d.getValue(), 0.4);
+    }
+    
+    @Test
+    public void test_setValue5() {
+        Display d = new Display();
+        d.setValue(1.4);
+        
+        assertEquals(d.getValue(), 1.4);
+    }
+    
 }

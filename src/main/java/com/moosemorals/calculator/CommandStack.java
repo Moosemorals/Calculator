@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Osric Wilkinson <osric@fluffypeople.com>.
+ * Copyright 2017 Osric Wilkinson <osric@fluffypeople.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,38 @@
  */
 package com.moosemorals.calculator;
 
-import com.moosemorals.calculator.xml.ConfigFileParser;
-import static org.testng.Assert.assertEquals;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class EngineNGTest {
+ class CommandStack {
 
-    private static final double FUDGE = 0.0001;
+    private final Logger log = LoggerFactory.getLogger(CommandStack.class);
 
-    private Config config;
-    
-    @BeforeClass
-    public void setup() throws Exception {        
-        config = new ConfigFileParser().parse(getClass().getResourceAsStream("/config.xml"));
-    }
-    
-    @Test
-    public void test_click1() {
-        Engine e = new Engine(config);
-        e.command("1");
-        assertEquals(e.peek(), 1.0, FUDGE);
+    private final Deque<Command> stack;
+
+     CommandStack() {
+        stack = new LinkedList<>();
     }
 
-    @Test
-    public void test_click2() {
-        Engine e = new Engine(config);
-        e.command("1");
-        e.command(".");
-        e.command("2");
-        assertEquals(e.peek(), 1.2, FUDGE);
-        assertEquals(e.getDepth(), 0);
+     void addCommand(Command x) {
+        x.execute();
+        stack.push(x);
     }
 
+     void undo() {
+        if (!stack.isEmpty()) {
+            stack.pop().undo();
+        }
+    }
 
+    void clear() {
+         stack.clear();
+    }
 }
