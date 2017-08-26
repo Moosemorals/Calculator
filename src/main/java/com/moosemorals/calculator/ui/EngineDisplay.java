@@ -26,9 +26,12 @@ package com.moosemorals.calculator.ui;
 import com.moosemorals.calculator.Config;
 import com.moosemorals.calculator.Engine;
 import com.moosemorals.calculator.EngineWatcher;
+import static com.moosemorals.calculator.ui.UI.DISPLAY_PATTERN;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +45,18 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
     private static final int BORDER = 5;
 
     private final Logger log = LoggerFactory.getLogger(EngineDisplay.class);
+    private final DecimalFormat df;
     private final Engine engine;
     private final Config config;
 
     public EngineDisplay(Config config, Engine engine) {
         this.engine = engine;
         this.config = config;
+        
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setNaN("Err");
+        df = new DecimalFormat(DISPLAY_PATTERN, symbols);
+        
     }
 
     @Override
@@ -66,7 +75,7 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
         }
 
         for (int i = 0; i < engine.getDepth(); i += 1) {
-            String text = engine.getElementAt(i);
+            String text = df.format(engine.getElementAt(i));
 
             int x = getWidth() - fm.stringWidth(text) - BORDER;
             int y = getHeight() - (i * fm.getHeight()) - BORDER;

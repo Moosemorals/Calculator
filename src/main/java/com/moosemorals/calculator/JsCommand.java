@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Osric Wilkinson <osric@fluffypeople.com>.
+ * Copyright 2017 Osric Wilkinson (osric@fluffypeople.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.moosemorals.calculator.Commands;
 
-import com.moosemorals.calculator.Command;
-import com.moosemorals.calculator.Stack;
+package com.moosemorals.calculator;
+
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Osric Wilkinson <osric@fluffypeople.com>
+ * @author Osric Wilkinson (osric@fluffypeople.com)
  */
-public class SwapCommand implements Command {
+public class JsCommand implements Command {
 
-    final Stack stack;
-    private double left;
-    private double right;
+    private final Logger log = LoggerFactory.getLogger(JsCommand.class);
 
-    public SwapCommand(Stack stack) {
-        this.stack = stack;
+    private final ScriptObjectMirror jsCmd;
+    
+    public JsCommand(ScriptObjectMirror jsCmd) {
+        this.jsCmd = jsCmd;
     }
-
+    
     @Override
     public void execute() {
-        left = stack.pop();
-        right = stack.pop();
-        stack.push(left * right);
+        jsCmd.callMember("execute");
     }
 
     @Override
     public void undo() {
-        stack.pop();
-        stack.push(right);
-        stack.push(left);
+        jsCmd.callMember("undo");
     }
+
 }

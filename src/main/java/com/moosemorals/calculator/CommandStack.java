@@ -49,7 +49,7 @@ import java.util.LinkedList;
     }
 
      void undo() {
-        if (stack.size() > 0) {
+        if (!stack.isEmpty()) {
             stack.pop().undo();
         }
     }

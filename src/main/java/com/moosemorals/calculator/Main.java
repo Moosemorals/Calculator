@@ -65,7 +65,7 @@ public class Main {
          log.error("Can't set look and feel");
          }
          */
-        Engine engine = new Engine();
+        Engine engine = new Engine(config);
         final UI ui = new UI(prefs, config, engine);
 
         SwingUtilities.invokeLater(new Runnable() {

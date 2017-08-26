@@ -23,6 +23,7 @@
  */
 package com.moosemorals.calculator;
 
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Stack {
+public final class Stack {
 
     public final static int INITIAL_SIZE = 4;
     private final Logger log = LoggerFactory.getLogger(Stack.class);
@@ -41,11 +42,17 @@ public class Stack {
 
     public Stack() {
         lock = new Object();
-        backingArray = new double[INITIAL_SIZE];
-        for (int i = 0; i < INITIAL_SIZE; i += 1) {
-            backingArray[i] = Double.NaN;
+        reset();
+    }
+
+    public void reset() {
+        synchronized (lock) {
+            backingArray = new double[INITIAL_SIZE];
+            for (int i = 0; i < INITIAL_SIZE; i += 1) {
+                backingArray[i] = Double.NaN;
+            }
+            depth = 0;
         }
-        depth = 0;
     }
 
     public double pop() {
@@ -92,6 +99,14 @@ public class Stack {
 
     public int getDepth() {
         return depth;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append(Arrays.toString(backingArray))
+                .toString();
+
     }
 
 }

@@ -103,8 +103,8 @@ public class ButtonsParser extends BaseParser<List<Button>> {
                 case "name":
                     builder.setName(readTag(parser, "name"));
                     break;
-                case "code":
-                    builder.setCode(readTag(parser, "code"));
+                case "script":
+                    builder.setCode(readTag(parser, "script"));
                     break;
                 case "key":
                     raw = readTag(parser, "key");

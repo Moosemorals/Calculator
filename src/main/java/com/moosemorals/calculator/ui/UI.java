@@ -39,6 +39,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.prefs.Preferences;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -56,8 +58,10 @@ import org.slf4j.LoggerFactory;
 public class UI implements ActionListener {
 
     private static final String CMD_PREFIX = "BTN";
+    static final String DISPLAY_PATTERN = "#,##0.#########";
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
+    private final DecimalFormat df;
     private final Engine engine;
     private final Clippy clippy;
     private final Config config;
@@ -68,6 +72,10 @@ public class UI implements ActionListener {
         this.config = config;
         this.engine = engine;
         clippy = new Clippy();
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setNaN("Err");
+        df = new DecimalFormat(DISPLAY_PATTERN, symbols);
     }
 
     public void build() throws IOException {
@@ -95,8 +103,7 @@ public class UI implements ActionListener {
             numbers.add(b, c);
         }
 
-        EngineDisplay display = new EngineDisplay(config, engine);
-        //      display.setFont(font);
+        EngineDisplay display = new EngineDisplay(config, engine);        
         engine.addEngineWatcher(display);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -121,7 +128,7 @@ public class UI implements ActionListener {
                 } else if (e.getID() == KeyEvent.KEY_PRESSED) {
 
                     if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
-                        String text = engine.getElementAt(0);
+                        String text = df.format(engine.getElementAt(0));
                         clippy.sendToClipboard(text);
                     } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
                         String text = clippy.getFromClipboard();

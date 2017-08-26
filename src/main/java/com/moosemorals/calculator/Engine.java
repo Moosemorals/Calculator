@@ -23,15 +23,21 @@
  */
 package com.moosemorals.calculator;
 
-import com.moosemorals.calculator.Commands.*;
+import com.moosemorals.calculator.ui.Button;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
  * @author Osric Wilkinson <osric@fluffypeople.com>
@@ -39,37 +45,28 @@ import java.util.Set;
 public class Engine {
 
     private static final String ENTER = "⏎";
-    private static final String DROP = "⊗";
-    private static final String ROOT = "√";
-    private static final String SWAP = "⇅";
     private static final String CLEAR = "☠";
-    private static final String MINUS = "\u2796";
-    private static final String PLUS = "\u2795";
-    private static final String DIVIDE = "\u2797";
-    private static final String MULTIPLY = "\u2716";
-    private static final String SIGN_CHANGE = "\u00B1";
-    private static final String POWER = "x^y";
-    private static final String DUPLICAE = "dup";
-    private static final String LN = "ln";
-
-    private static final String DEFAULT_PATTERN = "#,##0.#########";
+    
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<EngineWatcher> engineWatchers;
-    private final DecimalFormat df;
+    
     private final CommandStack commandStack;
     private final LinkedList<String> display;
-    private int fraction = 1;
+    private final Config config;
+    private final ScriptEngine scriptEngine;
+    private final Map<String, ScriptObjectMirror> scriptCache;
 
-    Engine() {
+    Engine(Config config) {
+        this.config = config;
+
+        scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        scriptCache = new HashMap<>();
         display = new LinkedList<>();
         commandStack = new CommandStack();
         stack = new Stack();
         stack.push(0.0);
         engineWatchers = new HashSet<>();
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setNaN("Err");
-        df = new DecimalFormat(DEFAULT_PATTERN, symbols);
     }
 
     public double peek() {
@@ -101,8 +98,26 @@ public class Engine {
         notifyListeners();
     }
 
-    public void command(final String cmd) {
-        double left, right;
+    public void command(final String cmd) {        
+        for (int i = 0; i < config.getButtonCount(); i += 1) {
+            Button b = config.getButton(i);
+
+            if (cmd.equals(b.getLabel())) {
+                String code = b.getCode();
+                if (code != null) {
+                    try {
+                        JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+
+                        commandStack.addCommand(new JsCommand((ScriptObjectMirror) func.call(null, stack)));
+                        notifyListeners();
+                        return;
+                    } catch (ScriptException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        }
+
         switch (cmd) {
             case "0":
             case "1":
@@ -116,53 +131,30 @@ public class Engine {
             case "9":
             case ".":
                 commandStack.addCommand(new Command() {
+                    double left;
                     @Override
                     public void execute() {
-                        display.push(cmd);
+                        display.addLast(cmd);
+                        left = stack.pop();
+                        stack.push(getDisplayValue());
                     }
 
                     @Override
                     public void undo() {
-                        display.pop();
+                        display.removeLast();
+                        stack.pop();
+                        stack.push(left);
                     }
                 });
                 break;
-            case PLUS:
-                commandStack.addCommand(new AddCommand(stack));
-                break;
-            case MINUS:
-                commandStack.addCommand(new SubtractCommand(stack));
-                break;
-            case MULTIPLY:
-                commandStack.addCommand(new MultiplyCommand(stack));
 
-                break;
-            case DIVIDE:
-                commandStack.addCommand(new DivideCommand(stack));
-
-                break;
-            case SIGN_CHANGE:
-                commandStack.addCommand(new SignChangeCommand(stack));
-                break;
-            case POWER:
-                commandStack.addCommand(new PowerCommand(stack));
-
-                break;
-            case LN:
-                commandStack.addCommand(new LnCommand(stack));
-
-            case ROOT:
-                commandStack.addCommand(new RootCommand(stack));
-
-                break;
             case ENTER:
                 commandStack.addCommand(new Command() {
+                    double left;
                     @Override
-                    public void execute() {
-                        StringBuilder scratch = new StringBuilder();
-
-                        display.forEach(scratch::append);
-                        stack.push(Double.parseDouble(scratch.toString()));
+                    public void execute() {                                                
+                        stack.push(getDisplayValue());
+                        display.clear();
                     }
 
                     @Override
@@ -172,24 +164,10 @@ public class Engine {
                 });
 
                 break;
-            case DUPLICAE:
-                commandStack.addCommand(new DuplicateCommand(stack));
-
-                break;
-            case SWAP:
-                commandStack.addCommand(new SwapCommand(stack));
-
-                break;
-            case DROP:
-                commandStack.addCommand(new DropCommand(stack));
-
-                break;
             case CLEAR:
                 commandStack.clear();
-                while (stack.getDepth() > 0) {
-                    stack.pop();
-                }
-
+                display.clear();
+                stack.reset();
                 break;
             default:
                 log.warn("Don't know about that");
@@ -202,9 +180,9 @@ public class Engine {
         return stack.getDepth();
     }
 
-    public String getElementAt(int index) {
+    public double getElementAt(int index) {
 
-        return df.format(stack.peek(index));
+        return stack.peek(index);
     }
 
     private void notifyListeners() {
@@ -213,6 +191,12 @@ public class Engine {
                 watcher.onEngineChanged();
             }
         }
+    }
+
+    private double getDisplayValue() {
+        StringBuilder scratch = new StringBuilder();        
+        display.forEach(scratch::append);
+        return Double.parseDouble(scratch.toString());
     }
 
     public void addEngineWatcher(EngineWatcher watcher) {
