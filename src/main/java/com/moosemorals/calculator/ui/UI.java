@@ -139,6 +139,10 @@ public class UI implements ActionListener {
                             // ignored, but no point trying to add the number
                         }
                     }
+                } else if (e.getKeyCode() == KeyEvent.VK_Z) {
+                    engine.undo();
+                } else if (e.getKeyCode() == KeyEvent.VK_Y) {
+                    // engine.redo();
                 } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
                     engine.undo();
                 }
