@@ -33,10 +33,12 @@ See the [example config][config] for an extended example, but buttons
 are defined like:
 
     <button>
-        <name>Add</name>
-        <label>+</label>
-        <key>+</key>
-        <script>
+        <name>Add</name>    <!-- Human readable name -->
+        <label>+</label>    <!-- Label printed on the button -->
+        <key>+</key>        <!-- Key code to trigger the button. Optional -->
+        <in>2</in>          <!-- How many values get taken off the stack -->
+        <out>1</out>        <!-- How many values get put onto the stack -->
+        <script>    <!-- Code that runs -->
             function (stack) {
                 var left, right;
                 return {
