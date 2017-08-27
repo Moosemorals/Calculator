@@ -23,8 +23,6 @@
  */
 package com.moosemorals.calculator;
 
-import com.moosemorals.calculator.ui.Button;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +30,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -41,7 +42,8 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 /**
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Engine {    
+public final class Engine {
+
     private static final String CLEAR = "☠";
 
     private final Logger log = LoggerFactory.getLogger(Engine.class);
@@ -72,13 +74,32 @@ public class Engine {
     Engine(Config config) {
         this.config = config;
 
-        scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
-        scriptCache = new HashMap<>();
         display = new Display();
         commandStack = new CommandStack();
+        engineWatchers = new HashSet<>();
+        scriptEngine = setupEngine();
+        scriptCache = new HashMap<>();
         stack = new Stack();
 
-        engineWatchers = new HashSet<>();
+        for (int i = 0; i < config.getButtonCount(); i += 1) {
+            Button b = config.getButton(i);
+            if (b.hasCode()) {
+                try {
+                    JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+                    scriptCache.put(b.getLabel(), (ScriptObjectMirror) func.call(null, stack));
+                } catch (ScriptException ex) {
+                    log.error("Button [{}]: Code error", b.getName(), ex);
+                }
+            }
+        }
+
+    }
+
+    private ScriptEngine setupEngine() {
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+        Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+
+        return engine;
     }
 
     public double peek() {
@@ -97,7 +118,7 @@ public class Engine {
                 return stack.peek(d - 1);
             }
         } else {
-           return stack.peek(d);
+            return stack.peek(d);
         }
     }
 
@@ -130,7 +151,7 @@ public class Engine {
                     handled = true;
                     break;
                 }
-                // Intentional drop through
+            // Intentional drop through
             case "0":
             case "1":
             case "2":
@@ -140,7 +161,7 @@ public class Engine {
             case "6":
             case "7":
             case "8":
-            case "9":            
+            case "9":
                 commandStack.addCommand(new Command() {
                     double left;
 
@@ -166,6 +187,7 @@ public class Engine {
             default:
                 if (display.hasValue()) {
                     commandStack.addCommand(enterCommand);
+                    handled = true;
                 }
                 break;
         }
@@ -180,29 +202,27 @@ public class Engine {
             Button b = config.getButton(i);
 
             if (cmd.equals(b.getLabel())) {
-                String code = b.getCode();
-                if (code != null) {                    
+                if (b.hasCode()) {
                     try {
                         if (!scriptCache.containsKey(cmd)) {
                             JSObject func = (JSObject) scriptEngine.eval(b.getCode());
                             scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
                         }
-                        
-                        log.debug("Depth {}, need {}", stack.getDepth(), b.getIn());
+
                         if (stack.getDepth() >= b.getIn()) {
                             commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
                         } else {
-                            log.warn("Not enough stack for {}", b.getLabel());
+                            log.warn("Not enough stack for {}", b.getName());
                             stack.push(Double.NaN);
                         }
-                        
+
                         break;
                     } catch (ScriptException ex) {
-                        log.error("Button [{}]: Code error", b.getLabel(), ex);
+                        log.error("Button [{}]: Code error", b.getName(), ex);
                         stack.push(Double.NaN);
                     }
                 } else {
-                    log.error("Button [{}]: No code", b.getLabel());
+                    log.error("Button [{}]: No code", b.getName());
                 }
             }
         }

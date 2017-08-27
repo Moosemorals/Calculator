@@ -23,6 +23,7 @@
  */
 package com.moosemorals.calculator.ui;
 
+import com.moosemorals.calculator.Button;
 import com.moosemorals.calculator.Config;
 import com.moosemorals.calculator.Engine;
 import com.moosemorals.calculator.Main;

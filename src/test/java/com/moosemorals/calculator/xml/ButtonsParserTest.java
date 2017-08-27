@@ -23,7 +23,7 @@
  */
 package com.moosemorals.calculator.xml;
 
-import com.moosemorals.calculator.ui.Button;
+import com.moosemorals.calculator.Button;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.List;

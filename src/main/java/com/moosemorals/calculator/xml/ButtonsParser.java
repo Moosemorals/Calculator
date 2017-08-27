@@ -23,7 +23,7 @@
  */
 package com.moosemorals.calculator.xml;
 
-import com.moosemorals.calculator.ui.Button;
+import com.moosemorals.calculator.Button;
 import static com.moosemorals.calculator.xml.BaseParser.NAMESPACE;
 import java.io.IOException;
 import java.util.ArrayList;

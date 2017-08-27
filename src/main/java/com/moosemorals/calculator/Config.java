@@ -23,7 +23,6 @@
  */
 package com.moosemorals.calculator;
 
-import com.moosemorals.calculator.ui.Button;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

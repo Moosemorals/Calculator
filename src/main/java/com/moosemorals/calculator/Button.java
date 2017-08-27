@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.moosemorals.calculator.ui;
+package com.moosemorals.calculator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +127,10 @@ public class Button {
      */
     public String getCode() {
         return code;
+    }
+    
+    public boolean hasCode() {
+        return code != null;
     }
 
     /**
