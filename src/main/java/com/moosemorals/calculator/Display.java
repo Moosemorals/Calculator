@@ -55,6 +55,17 @@ public final class Display {
 
         display.addLast(n);
     }
+    
+    public boolean hasDecimalPoint() {
+        if (!display.isEmpty()) {
+            for (int i = 0; i < display.size(); i += 1) {
+                if (display.get(i).equals(".")) {
+                    return true;
+                }
+            }
+        } 
+        return false;        
+    }
 
     public String pop() {
         return display.removeLast();
@@ -65,7 +76,12 @@ public final class Display {
     }
 
     public double getValue() {
-        return Double.parseDouble(toString());
+        // Special cases
+        String textValue = toString();
+        if (textValue.equals(".")) {
+            return 0;
+        }
+        return Double.parseDouble(textValue);
     }
 
     public boolean hasValue() {

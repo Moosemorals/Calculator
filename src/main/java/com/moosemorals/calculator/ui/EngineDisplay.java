@@ -26,8 +26,8 @@ package com.moosemorals.calculator.ui;
 import com.moosemorals.calculator.Config;
 import com.moosemorals.calculator.Engine;
 import com.moosemorals.calculator.EngineWatcher;
-import static com.moosemorals.calculator.ui.UI.DISPLAY_PATTERN;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public class EngineDisplay extends JComponent implements EngineWatcher {
 
     private static final int BORDER = 5;
+    private static final int FONT_SIZE = 24;
 
     private final Logger log = LoggerFactory.getLogger(EngineDisplay.class);
     private final DecimalFormat df;
@@ -52,16 +53,17 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
     public EngineDisplay(Config config, Engine engine) {
         this.engine = engine;
         this.config = config;
+        this.setFont(new Font("Monospaced", Font.BOLD, FONT_SIZE));
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setNaN("Err");
-        df = new DecimalFormat(DISPLAY_PATTERN, symbols);
+        df = new DecimalFormat(UI.DISPLAY_PATTERN, symbols);
 
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(config.getCols() * config.getSize(), 18 * 6);
+        return new Dimension(config.getCols() * config.getSize(), FONT_SIZE * 6);
     }
 
     private void displayLine(Graphics g, FontMetrics fm, int index, String text) {
@@ -81,15 +83,11 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
 
-        boolean hasDisplayLine = engine.hasDisplayValue();
-        
-        if (hasDisplayLine) {
-            displayLine(g, fm, 0, df.format(engine.getDisplayValue()));
-        }
-        
+        displayLine(g, fm, 0, engine.getDisplayString());
+
         for (int i = 0; i < engine.getDepth(); i += 1) {
             String text = df.format(engine.getElementAt(i));
-            displayLine(g, fm, (hasDisplayLine ? i + 1 : i), text);
+            displayLine(g, fm, i + 1, text);
         }
     }
 

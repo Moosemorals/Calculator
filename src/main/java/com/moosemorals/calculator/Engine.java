@@ -41,9 +41,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 /**
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Engine {
-
-    private static final String ENTER = "⏎";
+public class Engine {    
     private static final String CLEAR = "☠";
 
     private final Logger log = LoggerFactory.getLogger(Engine.class);
@@ -127,6 +125,12 @@ public class Engine {
     public void command(final String cmd) {
         boolean handled = false;
         switch (cmd) {
+            case ".":
+                if (display.hasDecimalPoint()) {
+                    handled = true;
+                    break;
+                }
+                // Intentional drop through
             case "0":
             case "1":
             case "2":
@@ -136,8 +140,7 @@ public class Engine {
             case "6":
             case "7":
             case "8":
-            case "9":
-            case ".":
+            case "9":            
                 commandStack.addCommand(new Command() {
                     double left;
 
@@ -201,8 +204,8 @@ public class Engine {
         return display.hasValue();
     }
 
-    public double getDisplayValue() {
-        return display.getValue();
+    public String getDisplayString() {
+        return display.toString();
     }
 
     public int getDepth() {

@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class UI implements ActionListener {
 
     private static final String CMD_PREFIX = "BTN";
-    static final String DISPLAY_PATTERN = "#,##0.#########";
+    static final String DISPLAY_PATTERN = "#,##0.######";
 
     private final Logger log = LoggerFactory.getLogger(UI.class);
     private final DecimalFormat df;
