@@ -68,16 +68,12 @@ public class Main {
         Engine engine = new Engine(config);
         final UI ui = new UI(prefs, config, engine);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ui.build();
-                } catch (IOException ex) {
-                    throw new RuntimeException("Can't build ui: " + ex.getMessage(), ex);
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                ui.build();
+            } catch (IOException ex) {
+                throw new RuntimeException("Can't build ui: " + ex.getMessage(), ex);
             }
-
         });
     }
 

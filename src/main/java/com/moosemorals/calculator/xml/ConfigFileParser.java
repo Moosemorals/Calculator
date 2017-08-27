@@ -76,7 +76,7 @@ public class ConfigFileParser extends BaseParser<Config> {
 
             switch (parser.getLocalName()) {
                 case "cols":
-                    builder.setCols(readIntTag(parser, "cols"));
+                    skipTag(parser); // not used any more
                     break;
                 case "size":
                     builder.setSize(readIntTag(parser, "size"));

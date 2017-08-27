@@ -40,16 +40,22 @@ public class Config {
     private final Logger log = LoggerFactory.getLogger(Config.class);
     private final List<Button> buttons;
     private final int cols;
+    private final int rows;
     private final int size;
 
-    private Config(int cols, int size, List<Button> buttons) {
+    private Config(int cols, int rows, int size, List<Button> buttons) {
         this.cols = cols;
-        this.size = size;
+        this.rows = rows;
+        this.size = size;        
         this.buttons = buttons;
     }
 
     public int getCols() {
         return cols;
+    }
+    
+    public int getRows() {
+        return rows;
     }
 
     public int getSize() {
@@ -66,14 +72,10 @@ public class Config {
 
     public static class Builder {
 
-        private int cols = 5;
+        private int cols = 0;
+        private int rows = 0;
         private int size = 48;
         private final List<Button> buttons = new ArrayList<>();
-
-        public Builder setCols(int cols) {
-            this.cols = cols;
-            return this;
-        }
 
         public Builder setSize(int size) {
             this.size = size;
@@ -87,21 +89,29 @@ public class Config {
 
         public Config build() {
 
-            // Sort buttons so that the button in the top-left comes first,
-            // then top-right, then bottom-left, finaly bottom right.
-            Collections.sort(buttons, new Comparator<Button>() {
+            cols = 0;
+            rows = 0;
 
-                @Override
-                public int compare(Button left, Button right) {
-                    if (left.getY() == right.getY()) {
-                        return (left.getX() - right.getX());
-                    } else {
-                        return left.getY() - right.getY();
-                    }
+            buttons.forEach((Button b) -> {
+                if (b.getX() + b.getWidth() > cols) {
+                    cols = b.getX() + b.getWidth();
+                }
+                if (b.getY() + b.getHeight() > rows) {
+                    rows = b.getY() + b.getHeight();
                 }
             });
 
-            return new Config(cols, size, buttons);
+            // Sort buttons so that the button in the top-left comes first,
+            // then top-right, then bottom-left, finaly bottom right.
+            Collections.sort(buttons, (Button left, Button right) -> {
+                if (left.getY() == right.getY()) {
+                    return (left.getX() - right.getX());
+                } else {
+                    return left.getY() - right.getY();
+                }
+            });
+
+            return new Config(cols, rows, size, buttons);
         }
 
     }

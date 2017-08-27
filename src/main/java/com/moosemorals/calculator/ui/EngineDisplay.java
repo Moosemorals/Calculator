@@ -82,12 +82,16 @@ public class EngineDisplay extends JComponent implements EngineWatcher {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
-
-        displayLine(g, fm, 0, engine.getDisplayString());
+        
+        boolean hasDisplay = engine.hasDisplayValue() || engine.getDepth() == 0;
+        
+        if (hasDisplay) {
+            displayLine(g, fm, 0, engine.getDisplayString());
+        }
 
         for (int i = 0; i < engine.getDepth(); i += 1) {
             String text = df.format(engine.getElementAt(i));
-            displayLine(g, fm, i + 1, text);
+            displayLine(g, fm, hasDisplay ? i + 1 : i, text);
         }
     }
 
