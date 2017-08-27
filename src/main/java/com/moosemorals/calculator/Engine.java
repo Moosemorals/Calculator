@@ -187,11 +187,22 @@ public class Engine {
                             JSObject func = (JSObject) scriptEngine.eval(b.getCode());
                             scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
                         }
-                        commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
+                        
+                        log.debug("Depth {}, need {}", stack.getDepth(), b.getIn());
+                        if (stack.getDepth() >= b.getIn()) {
+                            commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
+                        } else {
+                            log.warn("Not enough stack for {}", b.getLabel());
+                            stack.push(Double.NaN);
+                        }
+                        
                         break;
                     } catch (ScriptException ex) {
+                        log.error("Button [{}]: Code error", b.getLabel(), ex);
                         stack.push(Double.NaN);
                     }
+                } else {
+                    log.error("Button [{}]: No code", b.getLabel());
                 }
             }
         }

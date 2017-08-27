@@ -33,6 +33,8 @@ THE SOFTWARE.
         <button x="0" y="0">
             <name>Square root</name>
             <label>&#x221A;</label>
+            <in>1</in>
+            <out>1</out>
             <script><![CDATA[
                 function (stack) {
                     var left;
@@ -52,6 +54,8 @@ THE SOFTWARE.
         <button x="1" y="0">
             <name>Natural Logarithm</name>
             <label>ln</label>
+            <in>1</in>
+            <out>1</out>            
             <script><![CDATA[
                 function (stack) {
                     var left;
@@ -72,6 +76,8 @@ THE SOFTWARE.
             <name>Power</name>
             <label>x^y</label>
             <key>^</key>
+            <in>2</in>
+            <out>1</out>
             <script><![CDATA[
                 function (stack) {
                     var left, right;
@@ -93,6 +99,8 @@ THE SOFTWARE.
         <button x="3" y="0">
             <name>Duplicate</name>
             <label>dup</label>
+            <in>1</in>
+            <out>1</out>
             <script><![CDATA[
                 function (stack) {
                     var left;
@@ -111,6 +119,8 @@ THE SOFTWARE.
         <button x="4" y="0">
             <name>Swap</name>
             <label>&#x21C5;</label>
+            <in>2</in>
+            <out>0</out>
             <script><![CDATA[
                 function (stack) {
                     var left, right;
@@ -150,6 +160,8 @@ THE SOFTWARE.
             <name>Addition (+)</name>
             <label>&#x2795;</label>
             <key>+</key>
+            <in>1</in>
+            <out>2</out>
             <script><![CDATA[
                 function (stack) {
                     var left, right;
@@ -171,6 +183,8 @@ THE SOFTWARE.
         <button x="4" y="1">
             <name>Drop</name>
             <label>&#x2297;</label>
+            <in>1</in>
+            <out>0</out>
             <script><![CDATA[
                 function (stack) {
                     var left;
@@ -205,6 +219,8 @@ THE SOFTWARE.
             <name>Subtraction (-)</name>
             <label>&#x2796;</label>
             <key>-</key>
+            <in>1</in>
+            <out>2</out>
             <script><![CDATA[
                 function (stack) {
                     var left, right;
@@ -227,7 +243,6 @@ THE SOFTWARE.
             <name>Clear</name>
             <label>&#x2620;</label>            
         </button>
-
         <button x="0" y="3">
             <name>Number 1</name>
             <label>1</label>
@@ -247,6 +262,8 @@ THE SOFTWARE.
             <name>Multiplication (*)</name>
             <label>&#x2716;</label>
             <key>*</key>
+            <in>1</in>
+            <out>2</out>
             <script><![CDATA[
                 function (stack) {
                     var left, right;
@@ -284,7 +301,9 @@ THE SOFTWARE.
         <button x="2" y="4">
             <name>Sign change</name>
             <label>&#x00B1;</label>
-           <script><![CDATA[
+            <in>1</in>
+            <out>1</out>
+            <script><![CDATA[
                 function (stack) {
                     var left;
                     return {
@@ -304,7 +323,9 @@ THE SOFTWARE.
             <name>Division (/)</name>
             <label>&#x2797;</label>
             <key>/</key>
-           <script><![CDATA[
+            <in>1</in>
+            <out>2</out>
+            <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {

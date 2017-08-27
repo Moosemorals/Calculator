@@ -21,53 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package com.moosemorals.calculator;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.testng.Assert.*;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Osric Wilkinson (osric@fluffypeople.com)
  */
-public class JsCommand implements Command {
-
-    private final Logger log = LoggerFactory.getLogger(JsCommand.class);
-
-    private final ScriptObjectMirror jsCmd;
+public class JsCommandNGTest {
     
-    public JsCommand(ScriptObjectMirror jsCmd) {
-        this.jsCmd = jsCmd;
+    @Test
+    public void testSomeMethod() {
+        
+        
     }
     
-    public int getIn() {
-        Integer raw = (Integer)jsCmd.getMember("in");
-        if (raw != null) {
-            return raw;
-        } else {            
-            return 0;
-        }
-    }
-    
-    public int getOut() {
-        Integer raw = (Integer)jsCmd.getMember("out");
-        if (raw != null) {
-            return raw;
-        } else {
-            return 0;
-        }
-    }
-    
-    @Override
-    public void execute() {
-        jsCmd.callMember("execute");
-    }
-
-    @Override
-    public void undo() {
-        jsCmd.callMember("undo");
-    }
-
 }

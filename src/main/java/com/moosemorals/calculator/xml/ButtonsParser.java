@@ -97,6 +97,12 @@ public class ButtonsParser extends BaseParser<List<Button>> {
             }
 
             switch (parser.getLocalName()) {
+                case "in":
+                    builder.setIn(readIntTag(parser, "in"));
+                    break;
+                case "out":
+                    builder.setOut(readIntTag(parser, "out"));
+                    break;
                 case "label":
                     builder.setLabel(readTag(parser, "label"));
                     break;

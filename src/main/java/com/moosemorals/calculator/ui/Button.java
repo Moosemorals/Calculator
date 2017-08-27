@@ -36,6 +36,8 @@ public class Button {
 
     private final int x;
     private final int y;
+    private final int in;
+    private final int out;
     private final int width;
     private final int height;
     private final String name;
@@ -43,9 +45,11 @@ public class Button {
     private final String code;
     private final char key;
 
-    private Button(int x, int y, int width, int height, String name, String label, String code, char key) {
+    private Button(int x, int y, int in, int out, int width, int height, String name, String label, String code, char key) {
         this.x = x;
         this.y = y;
+        this.in = in;
+        this.out = out;
         this.width = width;
         this.height = height;
         this.name = name;
@@ -70,6 +74,14 @@ public class Button {
      */
     public int getY() {
         return y;
+    }
+    
+    public int getIn() {
+        return in;
+    }
+    
+    public int getOut() {
+        return out;
     }
 
     /**
@@ -130,6 +142,8 @@ public class Button {
 
         private int x;
         private int y;
+        private int in = 0;
+        private int out = 0;
         private int width = 1;
         private int height = 1;
         private String name = "";
@@ -148,6 +162,16 @@ public class Button {
 
         public Builder setY(int y) {
             this.y = y;
+            return this;
+        }
+        
+        public Builder setIn(int in) {
+            this.in = in;
+            return this;
+        }
+        
+        public Builder setOut(int out) {
+            this.out = out;
             return this;
         }
 
@@ -182,7 +206,7 @@ public class Button {
         }
 
         public Button build() {
-            return new Button(x, y, width, height, name, label, code, key);
+            return new Button(x, y, in, out, width, height, name, label, code, key);
         }
     }
 
