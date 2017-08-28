@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -143,31 +142,45 @@ public final class Engine {
         notifyListeners();
     }
 
+    private Button getButton(String cmd) {
+        for (int i = 0; i < config.getButtonCount(); i += 1) {
+            Button b = config.getButton(i);
+
+            if (cmd.equals(b.getName())) {
+                return b;
+            }
+        }
+        throw new RuntimeException("Unknown command [" + cmd + "]");
+    }
+
     public void command(final String cmd) {
         boolean handled = false;
+
+        Button b = getButton(cmd);
+
         switch (cmd) {
-            case ".":
+            case "Decimal point":
                 if (display.hasDecimalPoint()) {
                     handled = true;
                     break;
                 }
             // Intentional drop through
-            case "0":
-            case "1":
-            case "2":
-            case "3":
-            case "4":
-            case "5":
-            case "6":
-            case "7":
-            case "8":
-            case "9":
+            case "Number 0":
+            case "Number 1":
+            case "Number 2":
+            case "Number 3":
+            case "Number 4":
+            case "Number 5":
+            case "Number 6":
+            case "Number 7":
+            case "Number 8":
+            case "Number 9":
                 commandStack.addCommand(new Command() {
                     double left;
 
                     @Override
                     public void execute() {
-                        display.push(cmd);
+                        display.push(b.getLabel());
                     }
 
                     @Override
@@ -178,7 +191,7 @@ public final class Engine {
                 handled = true;
                 break;
 
-            case CLEAR:
+            case "Clear":
                 commandStack.clear();
                 display.reset();
                 stack.reset();
@@ -187,7 +200,9 @@ public final class Engine {
             default:
                 if (display.hasValue()) {
                     commandStack.addCommand(enterCommand);
-                    handled = true;
+                    if (cmd.equals("Enter")) {
+                        handled = true;
+                    }
                 }
                 break;
         }
@@ -198,33 +213,26 @@ public final class Engine {
         }
 
         log.debug("Stack before {}", stack.toString());
-        for (int i = 0; i < config.getButtonCount(); i += 1) {
-            Button b = config.getButton(i);
 
-            if (cmd.equals(b.getLabel())) {
-                if (b.hasCode()) {
-                    try {
-                        if (!scriptCache.containsKey(cmd)) {
-                            JSObject func = (JSObject) scriptEngine.eval(b.getCode());
-                            scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
-                        }
-
-                        if (stack.getDepth() >= b.getIn()) {
-                            commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
-                        } else {
-                            log.warn("Not enough stack for {}", b.getName());
-                            stack.push(Double.NaN);
-                        }
-
-                        break;
-                    } catch (ScriptException ex) {
-                        log.error("Button [{}]: Code error", b.getName(), ex);
-                        stack.push(Double.NaN);
-                    }
-                } else {
-                    log.error("Button [{}]: No code", b.getName());
+        if (b.hasCode()) {
+            try {
+                if (!scriptCache.containsKey(cmd)) {
+                    JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+                    scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
                 }
+
+                if (stack.getDepth() >= b.getIn()) {
+                    commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
+                } else {
+                    log.warn("Not enough stack for {}", b.getName());
+                    stack.push(Double.NaN);
+                }                
+            } catch (ScriptException ex) {
+                log.error("Button [{}]: Code error", b.getName(), ex);
+                stack.push(Double.NaN);
             }
+        } else {
+            log.error("Button [{}]: No code", b.getName());
         }
         log.debug("Stack after {}", stack.toString());
 

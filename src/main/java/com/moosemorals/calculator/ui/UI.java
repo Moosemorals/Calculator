@@ -32,7 +32,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -99,7 +98,7 @@ public class UI implements ActionListener {
             b.setText(button.getLabel());
             b.setFont(buttonFont);
             b.setMargin(new Insets(0, 0, 0, 0));
-            b.setActionCommand(String.format("%s%s", CMD_PREFIX, button.getLabel()));
+            b.setActionCommand(String.format("%s%s", CMD_PREFIX, button.getName()));
             b.addActionListener(this);
             b.setPreferredSize(new Dimension(config.getSize() * button.getWidth(), config.getSize() * button.getHeight()));
             b.setFocusable(false);
@@ -111,22 +110,22 @@ public class UI implements ActionListener {
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher((KeyEvent e) -> {
             if (e.getID() == KeyEvent.KEY_TYPED) {
-                
+
                 char key = e.getKeyChar();
-                
+
                 for (int i = 0; i < config.getButtonCount(); i += 1) {
                     Button b = config.getButton(i);
                     if (b.getKey() == key) {
-                        engine.command(b.getLabel());
+                        engine.command(b.getName());
                         return false;
                     }
                 }
-                
+
                 if (key == 'x' || key == 'X' || key == 'q' || key == 'Q') {
                     System.exit(0);
                 }
             } else if (e.getID() == KeyEvent.KEY_PRESSED) {
-                
+
                 if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
                     String text = df.format(engine.getElementAt(0));
                     clippy.sendToClipboard(text);
@@ -178,7 +177,7 @@ public class UI implements ActionListener {
                 prefs.getInt(Main.KEY_FRAME_WIDTH, 640),
                 prefs.getInt(Main.KEY_FRAME_HEIGHT, 480)
         ));
-
+                
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.getContentPane().setLayout(new BoxLayout(window.getContentPane(), BoxLayout.Y_AXIS));
         window.add(display);
