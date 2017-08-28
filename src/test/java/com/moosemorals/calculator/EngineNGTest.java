@@ -46,16 +46,16 @@ public class EngineNGTest {
     @Test
     public void test_click1() {
         Engine e = new Engine(config);
-        e.command("1");
+        e.command("Number 1");
         assertEquals(e.peek(), 1.0, FUDGE);
     }
 
     @Test
     public void test_click2() {
         Engine e = new Engine(config);
-        e.command("1");
-        e.command(".");
-        e.command("2");
+        e.command("Number 1");
+        e.command("Decimal point");
+        e.command("Number 2");
         assertEquals(e.peek(), 1.2, FUDGE);
         assertEquals(e.getDepth(), 0);
     }
