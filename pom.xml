@@ -73,7 +73,7 @@
                         <configuration>
                             <target>
                                 <delete file="${project.build.directory}/${project.artifactId}-current.jar" />                                
-                            <symlink link="${project.build.directory}/${project.artifactId}-current.jar" resource="${project.build.directory}/${project.build.finalName}.jar"/>
+                                <symlink link="${project.build.directory}/${project.artifactId}-current.jar" resource="${project.build.directory}/${project.build.finalName}.jar"/>
                             </target>
                         </configuration>
                         <goals>
@@ -81,6 +81,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <SplashScreen-Image>images/splash.png</SplashScreen-Image>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
