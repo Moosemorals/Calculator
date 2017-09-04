@@ -58,14 +58,8 @@ public class Main {
             throw new RuntimeException("Can't read config.xml: " + ex.getMessage(), ex);
         }
 
-        /*
-         try {
-         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-         log.error("Can't set look and feel");
-         }
-         */
         Engine engine = new Engine(config);
+        engine.fillCache();
         final UI ui = new UI(prefs, config, engine);
 
         SwingUtilities.invokeLater(() -> {
@@ -75,6 +69,7 @@ public class Main {
                 throw new RuntimeException("Can't build ui: " + ex.getMessage(), ex);
             }
         });
+
     }
 
 }

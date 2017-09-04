@@ -23,9 +23,6 @@
  */
 package com.moosemorals.calculator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,6 +34,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Osric Wilkinson <osric@fluffypeople.com>
@@ -79,19 +78,26 @@ public final class Engine {
         scriptEngine = setupEngine();
         scriptCache = new HashMap<>();
         stack = new Stack();
+    }
 
-        for (int i = 0; i < config.getButtonCount(); i += 1) {
-            Button b = config.getButton(i);
-            if (b.hasCode()) {
-                try {
-                    JSObject func = (JSObject) scriptEngine.eval(b.getCode());
-                    scriptCache.put(b.getLabel(), (ScriptObjectMirror) func.call(null, stack));
-                } catch (ScriptException ex) {
-                    log.error("Button [{}]: Code error", b.getName(), ex);
+    void fillCache() {
+        new Thread(() -> {
+            log.debug("script cache load: start");
+            for (int i = 0; i < config.getButtonCount(); i += 1) {
+                Button b = config.getButton(i);
+                synchronized (scriptCache) {
+                    if (b.hasCode() && !scriptCache.containsKey(b.getLabel())) {
+                        try {
+                            JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+                            scriptCache.put(b.getLabel(), (ScriptObjectMirror) func.call(null, stack));
+                        } catch (ScriptException ex) {
+                            log.error("Script cache load: Button [{}]: Code error", b.getName(), ex);
+                        }
+                    }
                 }
             }
-        }
-
+            log.debug("Script cache load: complete");
+        }).start();
     }
 
     private ScriptEngine setupEngine() {
@@ -215,21 +221,23 @@ public final class Engine {
         log.debug("Stack before {}", stack.toString());
 
         if (b.hasCode()) {
-            try {
-                if (!scriptCache.containsKey(cmd)) {
-                    JSObject func = (JSObject) scriptEngine.eval(b.getCode());
-                    scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
-                }
+            synchronized (scriptCache) {
+                try {
+                    if (!scriptCache.containsKey(cmd)) {
+                        JSObject func = (JSObject) scriptEngine.eval(b.getCode());
+                        scriptCache.put(cmd, (ScriptObjectMirror) func.call(null, stack));
+                    }
 
-                if (stack.getDepth() >= b.getIn()) {
-                    commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
-                } else {
-                    log.warn("Not enough stack for {}", b.getName());
+                    if (stack.getDepth() >= b.getIn()) {
+                        commandStack.addCommand(new JsCommand(scriptCache.get(cmd)));
+                    } else {
+                        log.warn("Not enough stack for {}", b.getName());
+                        stack.push(Double.NaN);
+                    }
+                } catch (ScriptException ex) {
+                    log.error("Button [{}]: Code error", b.getName(), ex);
                     stack.push(Double.NaN);
-                }                
-            } catch (ScriptException ex) {
-                log.error("Button [{}]: Code error", b.getName(), ex);
-                stack.push(Double.NaN);
+                }
             }
         } else {
             log.error("Button [{}]: No code", b.getName());
