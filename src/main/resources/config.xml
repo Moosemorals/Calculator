@@ -25,18 +25,124 @@ THE SOFTWARE.
 
 <calculator>
 
-    <config>        
+    <config>
         <size>48</size>
     </config>
 
     <buttons>
         <row>
-        <button>
-            <name>Square root</name>
-            <label>&#x221A;</label>
-            <in>1</in>
-            <out>1</out>
-            <script><![CDATA[
+        </row>
+        <row>
+            <button>
+                <name>Sin</name>
+                <label>sin</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
+                function (stack) {
+                    var left;
+                    return {
+                        execute: function () {
+                            left = stack.pop();
+                            stack.push(Math.sin(left));
+                        },
+                        undo: function () {
+                            stack.pop();
+                            stack.push(left);
+                        }
+                    };
+                }
+            ]]></script>
+            </button>
+            <button>
+                <name>Cos</name>
+                <label>cos</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
+                function (stack) {
+                    var left;
+                    return {
+                        execute: function () {
+                            left = stack.pop();
+                            stack.push(Math.cos(left));
+                        },
+                        undo: function () {
+                            stack.pop();
+                            stack.push(left);
+                        }
+                    };
+                }
+            ]]></script>
+            </button>
+            <button>
+                <name>Tan</name>
+                <label>tan</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
+                function (stack) {
+                    var left;
+                    return {
+                        execute: function () {
+                            left = stack.pop();
+                            stack.push(Math.tan(left));
+                        },
+                        undo: function () {
+                            stack.pop();
+                            stack.push(left);
+                        }
+                    };
+                }
+            ]]></script>
+            </button>
+            <button>
+                <name>Pi</name>
+                <label>&#x3c0;</label>
+                <in>0</in>
+                <out>1</out>
+                <script><![CDATA[
+                function (stack) {
+                    return {
+                        execute: function () {
+                            stack.push(Math.PI);
+                        },
+                        undo: function () {
+                            stack.pop();
+                        }
+                    };
+                }
+            ]]></script>
+            </button>
+            <button>
+                <name>Reciprocal</name>
+                <label>1/x</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
+                function (stack) {
+                    var left;
+                    return {
+                        execute: function () {
+                            left = stack.pop();
+                            stack.push(1/left);
+                        },
+                        undo: function () {
+                            stack.pop();
+                            stack.push(left);
+                        }
+                    };
+                }
+            ]]></script>
+            </button>
+        </row>
+        <row>
+            <button>
+                <name>Square root</name>
+                <label>&#x221A;</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
                 function (stack) {
                     var left;
                     return {
@@ -51,13 +157,13 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Natural Logarithm</name>
-            <label>ln</label>
-            <in>1</in>
-            <out>1</out>            
-            <script><![CDATA[
+</button>
+            <button>
+                <name>Natural Logarithm</name>
+                <label>ln</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
                 function (stack) {
                     var left;
                     return {
@@ -72,14 +178,14 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Power</name>
-            <label>x^y</label>
-            <key>^</key>
-            <in>2</in>
-            <out>1</out>
-            <script><![CDATA[
+            </button>
+            <button>
+                <name>Power</name>
+                <label>x^y</label>
+                <key>^</key>
+                <in>2</in>
+                <out>1</out>
+                <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {
@@ -96,13 +202,13 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Duplicate</name>
-            <label>dup</label>
-            <in>1</in>
-            <out>1</out>
-            <script><![CDATA[
+            </button>
+            <button>
+                <name>Duplicate</name>
+                <label>dup</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
                 function (stack) {
                     var left;
                     return {
@@ -116,13 +222,13 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Swap</name>
-            <label>&#x21C5;</label>
-            <in>2</in>
-            <out>0</out>
-            <script><![CDATA[
+            </button>
+            <button>
+                <name>Swap</name>
+                <label>&#x21C5;</label>
+                <in>2</in>
+                <out>0</out>
+                <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {
@@ -141,31 +247,31 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
+            </button>
         </row>
         <row>
-        <button>
-            <name>Number 7</name>
-            <label>7</label>
-            <key>7</key>
-        </button>
-        <button>
-            <name>Number 8</name>
-            <label>8</label>
-            <key>8</key>
-        </button>
-        <button>
-            <name>Number 9</name>
-            <label>9</label>
-            <key>9</key>
-        </button>
-        <button>
-            <name>Addition (+)</name>
-            <label>&#x2795;</label>
-            <key>+</key>
-            <in>1</in>
-            <out>2</out>
-            <script><![CDATA[
+            <button>
+                <name>Number 7</name>
+                <label>7</label>
+                <key>7</key>
+            </button>
+            <button>
+                <name>Number 8</name>
+                <label>8</label>
+                <key>8</key>
+            </button>
+            <button>
+                <name>Number 9</name>
+                <label>9</label>
+                <key>9</key>
+            </button>
+            <button>
+                <name>Addition (+)</name>
+                <label>&#x2795;</label>
+                <key>+</key>
+                <in>1</in>
+                <out>2</out>
+                <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {
@@ -182,13 +288,13 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Drop</name>
-            <label>&#x2297;</label>
-            <in>1</in>
-            <out>0</out>
-            <script><![CDATA[
+            </button>
+            <button>
+                <name>Drop</name>
+                <label>&#x2297;</label>
+                <in>1</in>
+                <out>0</out>
+                <script><![CDATA[
                 function (stack) {
                     var left;
                     return {
@@ -201,31 +307,31 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
+            </button>
         </row>
         <row>
-        <button>
-            <name>Number 4</name>
-            <label>4</label>
-            <key>4</key>
-        </button>
-        <button>
-            <name>Number 5</name>
-            <label>5</label>
-            <key>5</key>
-        </button>
-        <button>
-            <name>Number 6</name>
-            <label>6</label>
-            <key>6</key>
-        </button>
-        <button>
-            <name>Subtraction (-)</name>
-            <label>&#x2796;</label>
-            <key>-</key>
-            <in>1</in>
-            <out>2</out>
-            <script><![CDATA[
+            <button>
+                <name>Number 4</name>
+                <label>4</label>
+                <key>4</key>
+            </button>
+            <button>
+                <name>Number 5</name>
+                <label>5</label>
+                <key>5</key>
+            </button>
+            <button>
+                <name>Number 6</name>
+                <label>6</label>
+                <key>6</key>
+            </button>
+            <button>
+                <name>Subtraction (-)</name>
+                <label>&#x2796;</label>
+                <key>-</key>
+                <in>1</in>
+                <out>2</out>
+                <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {
@@ -242,35 +348,35 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Clear</name>
-            <label>&#x2620;</label>            
-        </button>
+            </button>
+            <button>
+                <name>Clear</name>
+                <label>&#x2620;</label>
+            </button>
         </row>
         <row>
-        <button>
-            <name>Number 1</name>
-            <label>1</label>
-            <key>1</key>
-        </button>
-        <button>
-            <name>Number 2</name>
-            <label>2</label>
-            <key>2</key>
-        </button>
-        <button>
-            <name>Number 3</name>
-            <label>3</label>
-            <key>3</key>
-        </button>
-        <button>
-            <name>Multiplication (*)</name>
-            <label>&#x2716;</label>
-            <key>*</key>
-            <in>1</in>
-            <out>2</out>
-            <script><![CDATA[
+            <button>
+                <name>Number 1</name>
+                <label>1</label>
+                <key>1</key>
+            </button>
+            <button>
+                <name>Number 2</name>
+                <label>2</label>
+                <key>2</key>
+            </button>
+            <button>
+                <name>Number 3</name>
+                <label>3</label>
+                <key>3</key>
+            </button>
+            <button>
+                <name>Multiplication (*)</name>
+                <label>&#x2716;</label>
+                <key>*</key>
+                <in>1</in>
+                <out>2</out>
+                <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {
@@ -287,30 +393,30 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button height="2">
-            <name>Enter</name>
-            <label>&#x23CE;</label>
-            <key>\n</key>
-        </button>
+            </button>
+            <button height="2">
+                <name>Enter</name>
+                <label>&#x23CE;</label>
+                <key>\n</key>
+            </button>
         </row>
         <row>
-        <button>
-            <name>Decimal point</name>
-            <label>.</label>
-            <key>.</key>
-        </button>
-        <button>
-            <name>Number 0</name>
-            <label>0</label>
-            <key>0</key>
-        </button>
-        <button>
-            <name>Sign change</name>
-            <label>&#x00B1;</label>
-            <in>1</in>
-            <out>1</out>
-            <script><![CDATA[
+            <button>
+                <name>Decimal point</name>
+                <label>.</label>
+                <key>.</key>
+            </button>
+            <button>
+                <name>Number 0</name>
+                <label>0</label>
+                <key>0</key>
+            </button>
+            <button>
+                <name>Sign change</name>
+                <label>&#x00B1;</label>
+                <in>1</in>
+                <out>1</out>
+                <script><![CDATA[
                 function (stack) {
                     var left;
                     return {
@@ -325,14 +431,14 @@ THE SOFTWARE.
                     };
                 }
             ]]></script>
-        </button>
-        <button>
-            <name>Division (/)</name>
-            <label>&#x2797;</label>
-            <key>/</key>
-            <in>1</in>
-            <out>2</out>
-            <script><![CDATA[
+            </button>
+            <button>
+                <name>Division (/)</name>
+                <label>&#x2797;</label>
+                <key>/</key>
+                <in>1</in>
+                <out>2</out>
+                <script><![CDATA[
                 function (stack) {
                     var left, right;
                     return {
@@ -348,8 +454,8 @@ THE SOFTWARE.
                         }
                     };
                 }
-            ]]></script>            
-        </button>
+            ]]></script>
+            </button>
         </row>
     </buttons>
 </calculator>
