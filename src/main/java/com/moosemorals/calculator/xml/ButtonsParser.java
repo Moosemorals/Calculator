@@ -24,17 +24,19 @@
 package com.moosemorals.calculator.xml;
 
 import com.moosemorals.calculator.Button;
+
 import static com.moosemorals.calculator.xml.BaseParser.NAMESPACE;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
 public class ButtonsParser extends BaseParser<List<Button>> {
@@ -45,40 +47,56 @@ public class ButtonsParser extends BaseParser<List<Button>> {
     public List<Button> parse(XMLStreamReader parser) throws XMLStreamException, IOException {
         parser.require(XMLStreamReader.START_ELEMENT, NAMESPACE, "buttons");
 
+        int x = 0;
+        int y = 0;
+
         List<Button> buttons = new ArrayList<>();
 
-        while (parser.next() != XMLStreamReader.END_ELEMENT) {
-            if (parser.getEventType() != XMLStreamReader.START_ELEMENT) {
+        while (true) {
+            int next = parser.next();
+
+            if (next == XMLStreamReader.END_ELEMENT) {
+                switch (parser.getLocalName()) {
+                    case "buttons":
+                        return buttons;
+                    case "row":
+                        y += 1;
+                        break;
+                }
+            } else if (next != XMLStreamReader.START_ELEMENT) {
                 continue;
             }
 
             switch (parser.getLocalName()) {
                 case "button":
-                    buttons.add(parseButton(parser));
+                    buttons.add(parseButton(parser, x, y));
+                    x += 1;
+                    break;
+                case "row":
+                    x = 0;
                     break;
                 default:
-                    log.error("Unexpected tag {} at {}, skiping", parser.getLocalName(), getLocation(parser));
+                    log.error("Unexpected tag {} at {}, skipping", parser.getLocalName(), getLocation(parser));
                     skipTag(parser);
                     break;
             }
         }
-        return buttons;
     }
 
-    private Button parseButton(XMLStreamReader parser) throws XMLStreamException, IOException {
+    private Button parseButton(XMLStreamReader parser, int x, int y) throws XMLStreamException, IOException {
         parser.require(XMLStreamReader.START_ELEMENT, NAMESPACE, "button");
 
         Button.Builder builder = new Button.Builder();
 
-        builder.setX(readIntAttribute(parser, "x"));
-        builder.setY(readIntAttribute(parser, "y"));
+        builder.setX(x);
+        builder.setY(y);
 
         String raw = parser.getAttributeValue(NAMESPACE, "width");
         if (raw != null && !raw.isEmpty()) {
             try {
                 builder.setWidth(Integer.parseInt(raw, 10));
             } catch (NumberFormatException ex) {
-                throw new XMLStreamException("Can't parse width [" + raw + "] at " + getLocation(parser) , ex);
+                throw new XMLStreamException("Can't parse width [" + raw + "] at " + getLocation(parser), ex);
             }
         }
 
@@ -87,7 +105,7 @@ public class ButtonsParser extends BaseParser<List<Button>> {
             try {
                 builder.setHeight(Integer.parseInt(raw, 10));
             } catch (NumberFormatException ex) {
-                throw new XMLStreamException("Can't parse height [" + raw + "] at " + getLocation(parser) , ex);
+                throw new XMLStreamException("Can't parse height [" + raw + "] at " + getLocation(parser), ex);
             }
         }
 
