@@ -99,7 +99,7 @@ public abstract class BaseParser<T> {
         return result;
     }
 
-    protected String readTag(XMLStreamReader parser, String tagName) throws IOException, XMLStreamException {
+    protected String readTag(XMLStreamReader parser, String tagName) throws XMLStreamException {
         parser.require(XMLStreamReader.START_ELEMENT, NAMESPACE, tagName);
         StringBuilder result = new StringBuilder();
         while (parser.next() == XMLStreamReader.CHARACTERS) {
@@ -136,7 +136,7 @@ public abstract class BaseParser<T> {
         }
     }
 
-    protected void skipTag(XMLStreamReader parser) throws XMLStreamException, IOException {
+    protected void skipTag(XMLStreamReader parser) throws XMLStreamException {
         if (parser.getEventType() != XMLStreamReader.START_ELEMENT) {
             throw new XMLStreamException("Trying to skip when not at the start of an element at " + getLocation(parser));
         }
@@ -156,12 +156,10 @@ public abstract class BaseParser<T> {
     public String getLocation(XMLStreamReader parser) {
 
         Location where = parser.getLocation();
-        return new StringBuilder()
-                .append("Line ")
-                .append(where.getLineNumber())
-                .append(" Char ")
-                .append(where.getColumnNumber())
-                .toString();
+        return "Line " +
+                where.getLineNumber() +
+                " Char " +
+                where.getColumnNumber();
     }
 
 }

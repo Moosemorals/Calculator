@@ -75,7 +75,7 @@ public class StackNGTest {
     @Test(expectedExceptions = IndexOutOfBoundsException.class)
     public void test_peak3() {
         Stack s = new Stack();
-        s.peek(0);
+        assertEquals(s.peek(0), 0);
     }
 
     @Test

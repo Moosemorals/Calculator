@@ -26,8 +26,10 @@ package com.moosemorals.calculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -36,8 +38,8 @@ import java.util.LinkedList;
  class CommandStack {
 
     private final Logger log = LoggerFactory.getLogger(CommandStack.class);
-
-    private final Deque<Command> stack;
+    private final List<Command> stack;
+    private int current = 0;
 
      CommandStack() {
         stack = new LinkedList<>();
@@ -45,16 +47,29 @@ import java.util.LinkedList;
 
      void addCommand(Command x) {
         x.execute();
-        stack.push(x);
+        while (stack.size() > current) {
+            stack.remove(stack.size() - 1);
+        }
+        stack.add(current++, x);
     }
 
      void undo() {
-        if (!stack.isEmpty()) {
-            stack.pop().undo();
+        if (current >= 0) {
+            stack.get(--current).undo();
         }
+    }
+
+    void redo() {
+         if (current < stack.size()) {
+             stack.get(current++).execute();
+         }
     }
 
     void clear() {
          stack.clear();
+    }
+
+    protected List<Command> dump() {
+         return Collections.unmodifiableList(stack);
     }
 }

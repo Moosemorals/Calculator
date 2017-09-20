@@ -42,8 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class Engine {
 
-    private static final String CLEAR = "☠";
-
     private final Logger log = LoggerFactory.getLogger(Engine.class);
     private final Stack stack;
     private final Set<EngineWatcher> engineWatchers;
@@ -145,6 +143,11 @@ public final class Engine {
 
     public void undo() {
         commandStack.undo();
+        notifyListeners();
+    }
+
+    public void redo() {
+        commandStack.redo();
         notifyListeners();
     }
 

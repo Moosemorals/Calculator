@@ -119,7 +119,7 @@ public class Config implements XMLable {
 
             // Sort buttons so that the button in the top-left comes first,
             // then top-right, then bottom-left, finaly bottom right.
-            Collections.sort(buttons, (Button left, Button right) -> {
+            buttons.sort((Button left, Button right) -> {
                 if (left.getY() == right.getY()) {
                     return (left.getX() - right.getX());
                 } else {

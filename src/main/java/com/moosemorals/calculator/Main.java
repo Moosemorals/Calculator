@@ -25,13 +25,12 @@ package com.moosemorals.calculator;
 
 import com.moosemorals.calculator.ui.UI;
 import com.moosemorals.calculator.xml.ConfigFileParser;
+
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 
-import com.moosemorals.calculator.xml.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,12 +48,12 @@ public class Main {
     public static final String KEY_FRAME_HEIGHT = "frame_height";
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
-    private static Config config;
 
     public static void main(String[] args) throws IOException {
 
         Preferences prefs = Preferences.userNodeForPackage(Main.class);
 
+        Config config;
         try {
             config = new ConfigFileParser().parse(Main.class.getResourceAsStream("/config.xml"));
         } catch (XMLStreamException ex) {
@@ -66,11 +65,7 @@ public class Main {
         final UI ui = new UI(prefs, config, engine);
 
         SwingUtilities.invokeLater(() -> {
-            try {
-                ui.build();
-            } catch (IOException ex) {
-                throw new RuntimeException("Can't build ui: " + ex.getMessage(), ex);
-            }
+            ui.build();
         });
 
     }

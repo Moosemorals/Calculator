@@ -37,7 +37,7 @@ public final class Display {
     private final static String DISPLAY_FORMAT = "#############0.################";
     private final Logger log = LoggerFactory.getLogger(Display.class);
     private final LinkedList<String> display;
-    
+
     private final DecimalFormat df;
 
     public Display() {
@@ -55,16 +55,16 @@ public final class Display {
 
         display.addLast(n);
     }
-    
+
     public boolean hasDecimalPoint() {
         if (!display.isEmpty()) {
-            for (int i = 0; i < display.size(); i += 1) {
-                if (display.get(i).equals(".")) {
+            for (String aDisplay : display) {
+                if (aDisplay.equals(".")) {
                     return true;
                 }
             }
-        } 
-        return false;        
+        }
+        return false;
     }
 
     public String pop() {
@@ -87,18 +87,17 @@ public final class Display {
     public boolean hasValue() {
         return !display.isEmpty();
     }
-    
+
     public void setValue(double value) {
         String val = df.format(value);
         if (val.substring(val.length() - 1).equals(".")) {
             val = val.substring(0, val.length() - 1);
         }
-        log.debug("Val [{}]", val);
         display.clear();
-        for (int i = 0; i < val.length(); i += 1) {            
-            display.addLast(val.substring(i, i + 1));            
+        for (int i = 0; i < val.length(); i += 1) {
+            display.addLast(val.substring(i, i + 1));
         }
-        
+
     }
 
     @Override

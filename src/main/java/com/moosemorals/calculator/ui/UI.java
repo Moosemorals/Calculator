@@ -79,7 +79,7 @@ public class UI implements ActionListener {
         df = new DecimalFormat(DISPLAY_PATTERN, symbols);
     }
 
-    public void build() throws IOException {
+    public void build() {
         JPanel numbers = new JPanel();
         numbers.setLayout(new GridBagLayout());
 
@@ -142,7 +142,7 @@ public class UI implements ActionListener {
                 } else if (e.getKeyCode() == KeyEvent.VK_Z) {
                     engine.undo();
                 } else if (e.getKeyCode() == KeyEvent.VK_Y) {
-                    // engine.redo();
+                    engine.redo();
                 } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
                     engine.undo();
                 }

@@ -23,17 +23,14 @@
  */
 package com.moosemorals.calculator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
 public interface Command {
 
-    public void execute();
+    void execute();
 
-    public void undo();
+    void undo();
 
 }
