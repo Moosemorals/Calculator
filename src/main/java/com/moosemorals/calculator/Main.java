@@ -26,9 +26,12 @@ package com.moosemorals.calculator;
 import com.moosemorals.calculator.ui.UI;
 import com.moosemorals.calculator.xml.ConfigFileParser;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
+
+import com.moosemorals.calculator.xml.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +61,7 @@ public class Main {
             throw new RuntimeException("Can't read config.xml: " + ex.getMessage(), ex);
         }
 
+        System.exit(0);
         Engine engine = new Engine(config);
         engine.fillCache();
         final UI ui = new UI(prefs, config, engine);

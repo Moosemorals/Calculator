@@ -24,6 +24,9 @@
 package com.moosemorals.calculator;
 
 import javax.xml.stream.XMLStreamException;
+
+import com.moosemorals.calculator.xml.XML;
+import com.moosemorals.calculator.xml.XMLable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

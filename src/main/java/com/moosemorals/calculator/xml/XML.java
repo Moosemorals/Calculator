@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.moosemorals.calculator;
+package com.moosemorals.calculator.xml;
 
 import java.io.Writer;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osric Wilkinson (osric@fluffypeople.com)
  */
-public class XML {
+public class XML implements AutoCloseable {
 
     private final Logger log = LoggerFactory.getLogger(XML.class);
     private final XMLStreamWriter xml;
@@ -45,8 +45,7 @@ public class XML {
         xml.writeStartDocument();
     }
 
-    public XML start(String name, String... attr) throws XMLStreamException {
-        xml.writeStartElement(name);
+    private void writeAttr(String... attr) throws XMLStreamException {
         if (attr != null) {
             if (attr.length % 2 != 0) {
                 throw new IllegalArgumentException("Attributes must come in pairs");
@@ -55,6 +54,11 @@ public class XML {
                 xml.writeAttribute(attr[i], attr[i + 1]);
             }
         }
+    }
+
+    public XML start(String name, String... attr) throws XMLStreamException {
+        xml.writeStartElement(name);
+        writeAttr(attr);
         return this;
     }
 
@@ -64,14 +68,7 @@ public class XML {
         } else {
             xml.writeEmptyElement(name);
         }
-        if (attr != null) {
-            if (attr.length % 2 != 0) {
-                throw new IllegalArgumentException("Attributes must come in pairs");
-            }
-            for (int i = 0; i < attr.length; i += 2) {
-                xml.writeAttribute(attr[i], attr[i + 1]);
-            }
-        }
+        writeAttr(attr);
         if (content != null) {
             xml.writeCharacters(content);
             xml.writeEndElement();
@@ -117,4 +114,9 @@ public class XML {
         return this;
     }
 
+    @Override
+    public void close() throws XMLStreamException {
+        xml.flush();
+        xml.close();
+    }
 }
