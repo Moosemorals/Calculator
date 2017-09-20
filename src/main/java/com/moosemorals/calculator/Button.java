@@ -23,6 +23,7 @@
  */
 package com.moosemorals.calculator;
 
+import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Button {
+public class Button implements XMLable {
 
     private final Logger log = LoggerFactory.getLogger(Button.class);
 
@@ -75,11 +76,11 @@ public class Button {
     public int getY() {
         return y;
     }
-    
+
     public int getIn() {
         return in;
     }
-    
+
     public int getOut() {
         return out;
     }
@@ -128,7 +129,7 @@ public class Button {
     public String getCode() {
         return code;
     }
-    
+
     public boolean hasCode() {
         return code != null;
     }
@@ -140,6 +141,28 @@ public class Button {
      */
     public char getKey() {
         return key;
+    }
+
+    @Override
+    public void toXML(XML xml) throws XMLStreamException {
+        xml.start("button",
+                "x", String.format("%d", x),
+                "y", String.format("%d", y),
+                "width", String.format("%d", width),
+                "height", String.format("%d", height)
+        );
+
+        xml.add("name", name);
+        xml.add("label", label);
+        xml.add("in", in);
+        xml.add("out", out);
+        if (key > 0) {
+            xml.add("key", key);
+        }
+        
+        xml.add("code", code);
+
+        xml.end();
     }
 
     public static class Builder {
@@ -168,12 +191,12 @@ public class Button {
             this.y = y;
             return this;
         }
-        
+
         public Builder setIn(int in) {
             this.in = in;
             return this;
         }
-        
+
         public Builder setOut(int out) {
             this.out = out;
             return this;

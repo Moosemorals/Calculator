@@ -78,7 +78,7 @@ public class ButtonsParser extends BaseParser<List<Button>> {
             try {
                 builder.setWidth(Integer.parseInt(raw, 10));
             } catch (NumberFormatException ex) {
-                throw new XMLStreamException("Can't parse width [" + raw + "] at " + getLocation(parser) + ": " + ex.getMessage(), ex);
+                throw new XMLStreamException("Can't parse width [" + raw + "] at " + getLocation(parser) , ex);
             }
         }
 
@@ -87,7 +87,7 @@ public class ButtonsParser extends BaseParser<List<Button>> {
             try {
                 builder.setHeight(Integer.parseInt(raw, 10));
             } catch (NumberFormatException ex) {
-                throw new XMLStreamException("Can't parse height [" + raw + "] at " + getLocation(parser) + ": " + ex.getMessage(), ex);
+                throw new XMLStreamException("Can't parse height [" + raw + "] at " + getLocation(parser) , ex);
             }
         }
 

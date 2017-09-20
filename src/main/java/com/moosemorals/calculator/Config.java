@@ -25,8 +25,8 @@ package com.moosemorals.calculator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osric Wilkinson <osric@fluffypeople.com>
  */
-public class Config {
+public class Config implements XMLable {
 
     private final Logger log = LoggerFactory.getLogger(Config.class);
     private final List<Button> buttons;
@@ -45,14 +45,14 @@ public class Config {
     private Config(int cols, int rows, int size, List<Button> buttons) {
         this.cols = cols;
         this.rows = rows;
-        this.size = size;        
+        this.size = size;
         this.buttons = buttons;
     }
 
     public int getCols() {
         return cols;
     }
-    
+
     public int getRows() {
         return rows;
     }
@@ -67,6 +67,20 @@ public class Config {
 
     public Button getButton(int index) {
         return buttons.get(index);
+    }
+
+    @Override
+    public void toXML(XML xml) throws XMLStreamException {
+        xml.start("calculator");
+        xml.start("config");
+        xml.add("size", size);
+        xml.end();
+        xml.start("buttons");
+
+        xml.add("buttons", buttons);
+
+        xml.end();
+        xml.end();
     }
 
     public static class Builder {
