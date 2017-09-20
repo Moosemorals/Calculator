@@ -56,7 +56,7 @@ public class ButtonsParserTest {
 
         Button secondButton = buttons.get(1);
         assertEquals(secondButton.getX(), 1);
-        assertEquals(secondButton.getY(), 1);
+        assertEquals(secondButton.getY(), 0);
         assertEquals(secondButton.getLabel(), "Test");
         assertEquals(secondButton.getCode(), "NOOP");
         assertEquals(secondButton.getKey(), 't');
